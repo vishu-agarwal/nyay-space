@@ -16,6 +16,7 @@ import {
   type GlobalSearchHit,
   type GlobalSearchKind,
 } from "@/lib/global-search";
+import { MaskIcon } from "@/components/icons/mask-icon";
 import { useNyayStorage } from "@/lib/use-nyay-storage";
 
 const KIND_LABEL: Record<GlobalSearchKind, string> = {
@@ -23,25 +24,6 @@ const KIND_LABEL: Record<GlobalSearchKind, string> = {
   client: "Clients",
   document: "Documents",
 };
-
-function SearchIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      aria-hidden
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-      />
-    </svg>
-  );
-}
 
 export function GlobalSearch() {
   const router = useRouter();
@@ -174,7 +156,7 @@ export function GlobalSearch() {
           aria-expanded={open}
           aria-controls={open ? dialogId : undefined}
         >
-          <SearchIcon className="h-4 w-4 shrink-0 opacity-70" />
+          <MaskIcon name="search" className="h-4 w-4 shrink-0 opacity-70" />
           <span className="min-w-0 flex-1 truncate">Search cases, clients, documents…</span>
           <kbd className="hidden shrink-0 rounded border border-nyay-border bg-nyay-surface px-1.5 py-0.5 font-mono text-[10px] font-medium text-nyay-muted sm:inline dark:border-white/15">
             {mac ? "⌘" : "Ctrl"}K
@@ -188,7 +170,7 @@ export function GlobalSearch() {
         className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-nyay-border text-nyay-trust transition hover:bg-nyay-canvas md:hidden dark:border-white/15 dark:text-foreground dark:hover:bg-white/5"
         aria-label="Open search"
       >
-        <SearchIcon className="h-5 w-5" />
+        <MaskIcon name="search" className="h-5 w-5" />
       </button>
 
       {open ? (
@@ -210,7 +192,10 @@ export function GlobalSearch() {
             <div className="border-b border-nyay-border p-3 dark:border-white/10">
               <label className="relative block">
                 <span className="sr-only">Search</span>
-                <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-nyay-muted" />
+                <MaskIcon
+                  name="search"
+                  className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-nyay-muted"
+                />
                 <input
                   ref={inputRef}
                   type="search"

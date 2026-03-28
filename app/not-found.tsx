@@ -24,10 +24,10 @@ export default function NotFound() {
           The page you are looking for does not exist or may have been moved.
         </p>
         <Link
-          href="/dashboard"
+          href="/"
           className="mt-8 inline-flex items-center justify-center rounded-lg bg-nyay-trust px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-nyay-trust/20 ring-1 ring-nyay-authority/30 transition hover:bg-nyay-trust-mid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-nyay-authority dark:bg-nyay-trust-mid dark:hover:bg-nyay-trust-soft"
         >
-          Back to dashboard
+          Back to home
         </Link>
       </div>
     </div>

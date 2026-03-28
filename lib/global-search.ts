@@ -7,6 +7,7 @@ import {
 } from "./cases";
 import { effectiveClientId } from "./matter-client-overrides";
 import type { MatterClientOverrides } from "./matter-client-overrides";
+import { routes } from "./routes";
 
 export type GlobalSearchKind = "case" | "client" | "document";
 
@@ -77,7 +78,7 @@ export function runGlobalSearch(
       kind: "case",
       title: m.title,
       subtitle: `${m.id} · ${clientName}`,
-      href: `/dashboard/cases/${encodeURIComponent(m.id)}`,
+      href: routes.case(m.id),
     });
     if (caseHits.length >= MAX_PER_KIND) break;
   }
@@ -90,7 +91,7 @@ export function runGlobalSearch(
       kind: "client",
       title: c.name,
       subtitle: `${c.email}${org}`,
-      href: `/dashboard/clients/${encodeURIComponent(c.id)}`,
+      href: routes.client(c.id),
     });
     if (clientHits.length >= MAX_PER_KIND) break;
   }
@@ -107,7 +108,7 @@ export function runGlobalSearch(
         kind: "document",
         title: doc.name,
         subtitle: `${m.id} · ${DOC_KIND_WORDS[doc.kind]}`,
-        href: `/dashboard/cases/${encodeURIComponent(m.id)}#document-${doc.id}`,
+        href: routes.caseDocument(m.id, doc.id),
       });
       if (documentHits.length >= MAX_PER_KIND) break;
     }

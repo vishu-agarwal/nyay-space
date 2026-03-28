@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { CLIENTS_SEED, mergeClients } from "@/lib/clients";
 import { effectiveClientId } from "@/lib/matter-client-overrides";
 import { useNyayStorage } from "@/lib/use-nyay-storage";
+import { routes } from "@/lib/routes";
 
 type Props = {
   matterId: string;
@@ -37,7 +38,7 @@ export function CaseClientBlock({ matterId, seedClientId }: Props) {
       </dt>
       <dd className="mt-1 text-sm font-medium text-white">
         <Link
-          href={`/dashboard/clients/${encodeURIComponent(clientId)}`}
+          href={routes.client(clientId)}
           className="rounded outline-none transition-colors hover:text-nyay-authority focus-visible:ring-2 focus-visible:ring-nyay-authority/50"
         >
           {displayName}

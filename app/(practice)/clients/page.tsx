@@ -14,6 +14,8 @@ import {
 } from "@/lib/cases";
 import { effectiveClientId } from "@/lib/matter-client-overrides";
 import { useNyayStorage } from "@/lib/use-nyay-storage";
+import { PracticeListingKicker } from "@/components/practice/listing-kicker";
+import { routes } from "@/lib/routes";
 
 function newClientId(): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -59,13 +61,7 @@ export default function ClientsPage() {
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
         <header className="mb-8 flex flex-col gap-4 border-b border-nyay-border pb-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-sm font-semibold tracking-wide text-nyay-authority uppercase">
-              <Link href="/dashboard" className="transition-colors hover:text-nyay-authority-rich">
-                Nyay Space
-              </Link>
-              <span className="text-nyay-muted/70"> / </span>
-              Clients
-            </p>
+            <PracticeListingKicker section="Clients" />
             <h1 className="mt-2 text-2xl font-semibold tracking-tight text-nyay-trust sm:text-3xl dark:text-foreground">
               Client management
             </h1>
@@ -123,7 +119,7 @@ export default function ClientsPage() {
                       >
                         <td className="px-4 py-3">
                           <Link
-                            href={`/dashboard/clients/${encodeURIComponent(c.id)}`}
+                            href={routes.client(c.id)}
                             className="group block rounded-md outline-none focus-visible:ring-2 focus-visible:ring-nyay-authority/50"
                           >
                             <span className="font-medium text-nyay-trust group-hover:text-nyay-trust-mid dark:text-foreground dark:group-hover:text-foreground">

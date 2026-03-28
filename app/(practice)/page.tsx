@@ -6,10 +6,12 @@ import {
   getHearingReminders,
   localISODate,
 } from "@/lib/calendar-reminders";
+import { MaskIcon } from "@/components/icons/mask-icon";
+import { routes } from "@/lib/routes";
 
 type QuickStatIconKind = "cases" | "hearings" | "deadlines" | "onTrack";
 
-/** Workflow emphasis for dashboard rows (distinct from case lifecycle in lib/cases). */
+/** Workflow emphasis for home overview rows (distinct from case lifecycle in lib/cases). */
 type MatterStatusIndicator = "active" | "pending" | "urgent";
 
 function MatterStatusBadge({ kind }: { kind: MatterStatusIndicator }) {
@@ -75,38 +77,15 @@ const quickStats: {
   },
 ];
 
+const quickStatIconName: Record<QuickStatIconKind, string> = {
+  cases: "stat-cases",
+  hearings: "stat-calendar",
+  deadlines: "stat-clock",
+  onTrack: "stat-check-circle",
+};
+
 function QuickStatGlyph({ kind }: { kind: QuickStatIconKind }) {
-  const stroke = (
-    <g
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.5}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      {kind === "cases" && (
-        <path d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9z" />
-      )}
-      {kind === "hearings" && (
-        <path d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5a2.25 2.25 0 0 0 2.25-2.25m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5a2.25 2.25 0 0 1 2.25 2.25v7.5" />
-      )}
-      {kind === "deadlines" && (
-        <path d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-      )}
-      {kind === "onTrack" && (
-        <path d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-      )}
-    </g>
-  );
-  return (
-    <svg
-      className="h-6 w-6"
-      viewBox="0 0 24 24"
-      aria-hidden
-    >
-      {stroke}
-    </svg>
-  );
+  return <MaskIcon name={quickStatIconName[kind]} className="h-6 w-6" />;
 }
 
 const activeCases: {
@@ -283,7 +262,7 @@ export default function DashboardPage() {
             </h2>
             <p className="mb-3 text-sm text-nyay-muted">
               <Link
-                href="/dashboard/calendar"
+                href={routes.calendar}
                 className="font-medium text-nyay-authority-rich underline-offset-2 hover:underline dark:text-nyay-authority"
               >
                 Open full calendar
@@ -311,7 +290,7 @@ export default function DashboardPage() {
                         ) : null}
                       </p>
                       <Link
-                        href={`/dashboard/cases/${encodeURIComponent(h.caseId)}`}
+                        href={routes.case(h.caseId)}
                         className="font-mono text-xs text-nyay-authority-rich hover:underline dark:text-nyay-authority"
                       >
                         {h.caseId}
@@ -354,7 +333,7 @@ export default function DashboardPage() {
                         {d.title}
                       </p>
                       <Link
-                        href={`/dashboard/cases/${encodeURIComponent(d.caseId)}`}
+                        href={routes.case(d.caseId)}
                         className="mt-1 inline-block font-mono text-xs text-nyay-authority-rich hover:underline dark:text-nyay-authority"
                       >
                         {d.caseId}
@@ -419,7 +398,7 @@ export default function DashboardPage() {
                     >
                       <td className="px-4 py-3">
                         <Link
-                          href={`/dashboard/cases/${encodeURIComponent(c.id)}`}
+                          href={routes.case(c.id)}
                           className="group block rounded-md outline-none focus-visible:ring-2 focus-visible:ring-nyay-authority/50"
                         >
                           <span className="font-mono text-xs text-nyay-authority-rich group-hover:underline dark:text-nyay-authority">

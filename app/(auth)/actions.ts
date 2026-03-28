@@ -67,7 +67,7 @@ export async function signIn(
   }
 
   // Replace with real authentication.
-  redirect("/dashboard");
+  redirect("/");
 }
 
 export async function loginSendOtp(
@@ -115,7 +115,7 @@ export async function loginVerifyOtp(
     };
   }
 
-  redirect("/dashboard");
+  redirect("/");
 }
 
 async function registerSendOtp(
@@ -210,7 +210,7 @@ export async function signUp(
   }
 
   // Replace with account creation and sign-in.
-  redirect("/dashboard");
+  redirect("/");
 }
 
 /** Single form: send / resend code, or create account with OTP. */

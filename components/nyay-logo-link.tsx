@@ -8,7 +8,7 @@ type NyayLogoLinkProps = {
 };
 
 export function NyayLogoLink({
-  href = "/dashboard",
+  href = "/",
   className = "",
 }: NyayLogoLinkProps) {
   return (

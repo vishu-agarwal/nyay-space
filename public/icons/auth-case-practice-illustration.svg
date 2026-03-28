@@ -1,0 +1,26 @@
+<svg viewBox="0 0 520 420" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <path d="M48 312 V188 H472 V312" stroke="rgba(255,255,255,0.14)" stroke-width="2" stroke-linejoin="round" />
+  <path d="M140 188 V102 L260 58 L380 102 V188" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-linejoin="round" />
+  <path d="M140 102 L380 102" stroke="rgba(201,162,39,0.35)" stroke-width="2" stroke-linecap="round" />
+  <path d="M88 312 V200 H132 V312 M168 312 V200 H212 V312 M308 312 V200 H352 V312 M388 312 V200 H432 V312" stroke="rgba(255,255,255,0.18)" stroke-width="2" />
+  <path d="M88 200 H432" stroke="rgba(255,255,255,0.1)" stroke-width="1.5" />
+  <path d="M260 298 V196" stroke="rgba(255,255,255,0.38)" stroke-width="3" stroke-linecap="round" />
+  <path d="M200 200 H320" stroke="rgba(255,255,255,0.38)" stroke-width="3" stroke-linecap="round" />
+  <path d="M220 200 L200 276 H248 L260 200" stroke="rgba(201,162,39,0.55)" stroke-width="2" stroke-linejoin="round" fill="rgba(201,162,39,0.07)" />
+  <path d="M300 200 L280 276 H328 L320 200" stroke="rgba(255,255,255,0.28)" stroke-width="2" stroke-linejoin="round" />
+  <ellipse cx="214" cy="284" rx="28" ry="8" stroke="rgba(201,162,39,0.48)" stroke-width="1.5" />
+  <ellipse cx="306" cy="284" rx="28" ry="8" stroke="rgba(255,255,255,0.26)" stroke-width="1.5" />
+  <path d="M252 298 L268 298" stroke="rgba(201,162,39,0.4)" stroke-width="2.5" stroke-linecap="round" />
+  <path d="M392 268 L448 224" stroke="rgba(201,162,39,0.5)" stroke-width="10" stroke-linecap="round" />
+  <path d="M448 224 L462 238" stroke="rgba(255,255,255,0.35)" stroke-width="4" stroke-linecap="round" />
+  <path d="M368 292 H428 V304 H368 Z" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.22)" stroke-width="2" stroke-linejoin="round" />
+  <path d="M72 278 L72 168 L188 142 L188 252 Z" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-linejoin="round" />
+  <path d="M92 288 L92 178 L208 152 L208 262 Z" fill="rgba(201,162,39,0.1)" stroke="rgba(201,162,39,0.42)" stroke-width="2" stroke-linejoin="round" />
+  <path d="M112 298 L112 188 L228 162 L228 272 Z" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.26)" stroke-width="2" stroke-linejoin="round" />
+  <path d="M128 210 L200 192 M128 228 L188 214 M128 246 L176 236" stroke="rgba(255,255,255,0.18)" stroke-width="1.5" stroke-linecap="round" />
+  <path d="M320 312 L320 248 L396 232 L396 312 M396 248 L452 262 L452 312" stroke="rgba(255,255,255,0.22)" stroke-width="2" stroke-linejoin="round" />
+  <path d="M320 248 L396 232 L452 262" stroke="rgba(201,162,39,0.32)" stroke-width="1.5" stroke-linecap="round" />
+  <path d="M332 268 H388 M332 284 H382 M408 276 H438 M408 292 H434" stroke="rgba(255,255,255,0.14)" stroke-width="1.25" stroke-linecap="round" />
+  <circle cx="118" cy="118" r="28" stroke="rgba(201,162,39,0.3)" stroke-width="2" />
+  <path d="M118 98 V118 L132 128" stroke="rgba(255,255,255,0.45)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+</svg>

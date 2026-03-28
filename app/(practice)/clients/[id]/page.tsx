@@ -21,6 +21,7 @@ import {
   setMatterLinkedClient,
 } from "@/lib/matter-client-overrides";
 import { useNyayStorage } from "@/lib/use-nyay-storage";
+import { routes } from "@/lib/routes";
 
 function newClientId(): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -81,7 +82,7 @@ export default function ClientDetailPage() {
       if (cleared[mid] === clientId) delete cleared[mid];
     }
     saveMatterClientOverrides(cleared);
-    router.push("/dashboard/clients");
+    router.push(routes.clients);
   };
 
   if (!hydrated) {
@@ -109,14 +110,14 @@ export default function ClientDetailPage() {
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
         <nav className="mb-6 text-sm text-nyay-muted" aria-label="Breadcrumb">
           <Link
-            href="/dashboard"
+            href={routes.home}
             className="font-semibold text-nyay-authority transition-colors hover:text-nyay-authority-rich"
           >
             Nyay Space
           </Link>
           <span className="text-nyay-muted/70"> / </span>
           <Link
-            href="/dashboard/clients"
+            href={routes.clients}
             className="font-medium text-nyay-trust-mid transition-colors hover:text-nyay-trust dark:text-foreground/90"
           >
             Clients
@@ -236,7 +237,7 @@ export default function ClientDetailPage() {
                 >
                   <div className="min-w-0">
                     <Link
-                      href={`/dashboard/cases/${encodeURIComponent(m.id)}`}
+                      href={routes.case(m.id)}
                       className="font-mono text-xs text-nyay-authority-rich outline-none hover:underline focus-visible:ring-2 focus-visible:ring-nyay-authority/50 dark:text-nyay-authority"
                     >
                       {m.id}

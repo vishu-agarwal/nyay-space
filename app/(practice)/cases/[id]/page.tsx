@@ -6,6 +6,8 @@ import {
   type TimelineEvent,
   type CaseDocument,
 } from "@/lib/cases";
+import { MaskIcon } from "@/components/icons/mask-icon";
+import { routes } from "@/lib/routes";
 import { EntityPracticeNotes } from "@/components/notes/entity-practice-notes";
 import { CaseClientBlock } from "./case-client-block";
 
@@ -50,14 +52,14 @@ export default async function CaseDetailPage({ params }: PageProps) {
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
         <nav className="mb-6 text-sm text-nyay-muted" aria-label="Breadcrumb">
           <Link
-            href="/dashboard"
+            href={routes.home}
             className="font-semibold text-nyay-authority transition-colors hover:text-nyay-authority-rich"
           >
             Nyay Space
           </Link>
           <span className="text-nyay-muted/70"> / </span>
           <Link
-            href="/dashboard/cases"
+            href={routes.cases}
             className="font-medium text-nyay-trust-mid transition-colors hover:text-nyay-trust dark:text-foreground/90"
           >
             Cases
@@ -334,14 +336,5 @@ function formatDisplayDate(iso: string): string {
 }
 
 function DocIcon() {
-  return (
-    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-      />
-    </svg>
-  );
+  return <MaskIcon name="document-lines" className="h-4 w-4" />;
 }

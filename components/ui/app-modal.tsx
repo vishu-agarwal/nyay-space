@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef } from "react";
+import { MaskIcon } from "@/components/icons/mask-icon";
 
 type Props = {
   open: boolean;
@@ -62,9 +63,7 @@ export function AppModal({
             className="shrink-0 rounded-lg p-2 text-nyay-muted transition-colors hover:bg-nyay-canvas hover:text-nyay-trust dark:hover:bg-white/10 dark:hover:text-foreground"
             aria-label="Close"
           >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <MaskIcon name="x-close" className="h-5 w-5" />
           </button>
         </div>
         <div className="px-5 py-4">{children}</div>

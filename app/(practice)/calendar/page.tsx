@@ -7,6 +7,8 @@ import {
   localISODate,
   remindersByDate,
 } from "@/lib/calendar-reminders";
+import { PracticeListingKicker } from "@/components/practice/listing-kicker";
+import { routes } from "@/lib/routes";
 
 const weekdayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
 
@@ -39,16 +41,7 @@ export default function CalendarPage() {
     <div className="min-h-full font-sans text-foreground">
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
         <header className="mb-6 border-b border-nyay-border pb-6">
-          <p className="text-sm font-semibold tracking-wide text-nyay-authority uppercase">
-            <Link
-              href="/dashboard"
-              className="transition-colors hover:text-nyay-authority-rich"
-            >
-              Nyay Space
-            </Link>
-            <span className="text-nyay-muted/70"> / </span>
-            Calendar
-          </p>
+          <PracticeListingKicker section="Calendar" />
           <h1 className="mt-2 text-2xl font-semibold tracking-tight text-nyay-trust sm:text-3xl dark:text-foreground">
             Calendar &amp; reminders
           </h1>
@@ -174,7 +167,7 @@ export default function CalendarPage() {
                           ) : null}
                         </time>
                         <Link
-                          href={`/dashboard/cases/${encodeURIComponent(h.caseId)}`}
+                          href={routes.case(h.caseId)}
                           className="font-mono text-xs text-nyay-authority-rich hover:underline dark:text-nyay-authority"
                         >
                           {h.caseId}
@@ -212,7 +205,7 @@ export default function CalendarPage() {
                         {d.title}
                       </p>
                       <Link
-                        href={`/dashboard/cases/${encodeURIComponent(d.caseId)}`}
+                        href={routes.case(d.caseId)}
                         className="mt-1 inline-block font-mono text-xs text-nyay-authority-rich hover:underline dark:text-nyay-authority"
                       >
                         {d.caseId}

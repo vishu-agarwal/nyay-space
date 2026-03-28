@@ -29,7 +29,7 @@ export default function Error({
         </h1>
         <p className="mt-3 max-w-md text-sm text-nyay-muted sm:text-base">
           We could not load this page. You can try again or return to the
-          dashboard.
+          home page.
         </p>
         <div className="mt-8 flex w-full max-w-xs flex-col gap-3 sm:max-w-none sm:flex-row sm:justify-center">
           <button
@@ -40,10 +40,10 @@ export default function Error({
             Try again
           </button>
           <Link
-            href="/dashboard"
+            href="/"
             className="inline-flex items-center justify-center rounded-lg border border-nyay-border bg-nyay-surface px-5 py-2.5 text-sm font-semibold text-nyay-trust transition hover:bg-nyay-canvas focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-nyay-authority dark:border-white/15 dark:bg-transparent dark:text-foreground dark:hover:bg-white/5"
           >
-            Back to dashboard
+            Back to home
           </Link>
         </div>
       </div>

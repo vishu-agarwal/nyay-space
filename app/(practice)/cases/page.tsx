@@ -2,10 +2,13 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { MaskIcon } from "@/components/icons/mask-icon";
 import { mergeClients, clientDisplayName } from "@/lib/clients";
 import { effectiveClientId } from "@/lib/matter-client-overrides";
 import { matters, type CaseStatus } from "@/lib/cases";
 import { useNyayStorage } from "@/lib/use-nyay-storage";
+import { PracticeListingKicker } from "@/components/practice/listing-kicker";
+import { routes } from "@/lib/routes";
 
 type StatusFilter = "all" | CaseStatus;
 
@@ -36,13 +39,7 @@ export default function CasesListingPage() {
     <div className="min-h-full font-sans text-foreground">
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
         <header className="mb-8 border-b border-nyay-border pb-6">
-          <p className="text-sm font-semibold tracking-wide text-nyay-authority uppercase">
-            <Link href="/dashboard" className="transition-colors hover:text-nyay-authority-rich">
-              Nyay Space
-            </Link>
-            <span className="text-nyay-muted/70"> / </span>
-            Cases
-          </p>
+          <PracticeListingKicker section="Cases" />
           <h1 className="mt-2 text-2xl font-semibold tracking-tight text-nyay-trust sm:text-3xl dark:text-foreground">
             Case listing
           </h1>
@@ -64,19 +61,10 @@ export default function CasesListingPage() {
               placeholder="Search by ID, title, client, court…"
               className="w-full rounded-lg border border-nyay-border bg-nyay-canvas px-3 py-2.5 pl-10 text-sm text-nyay-trust placeholder:text-nyay-muted/70 focus:border-nyay-trust-mid focus:outline-none focus:ring-2 focus:ring-nyay-authority/30 dark:bg-nyay-canvas dark:text-foreground"
             />
-            <span
-              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-nyay-muted"
-              aria-hidden
-            >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-            </span>
+            <MaskIcon
+              name="search"
+              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-nyay-muted"
+            />
           </label>
 
           <fieldset className="flex flex-wrap items-center gap-2 border-0 p-0">
@@ -121,20 +109,7 @@ export default function CasesListingPage() {
                   : "text-nyay-muted hover:text-nyay-trust dark:hover:text-foreground"
               }`}
             >
-              <svg
-                className="h-4 w-4 shrink-0"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              </svg>
+              <MaskIcon name="layout-list" className="h-4 w-4 shrink-0" />
             </button>
             <button
               type="button"
@@ -148,20 +123,7 @@ export default function CasesListingPage() {
                   : "text-nyay-muted hover:text-nyay-trust dark:hover:text-foreground"
               }`}
             >
-              <svg
-                className="h-4 w-4 shrink-0"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                aria-hidden
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"
-                />
-              </svg>
+              <MaskIcon name="layout-grid" className="h-4 w-4 shrink-0" />
             </button>
           </div>
         </div>
@@ -213,7 +175,7 @@ export default function CasesListingPage() {
                     >
                       <td className="px-4 py-3">
                         <Link
-                          href={`/dashboard/cases/${encodeURIComponent(c.id)}`}
+                          href={routes.case(c.id)}
                           className="group block rounded-md outline-none focus-visible:ring-2 focus-visible:ring-nyay-authority/50"
                         >
                           <span className="font-mono text-xs text-nyay-authority-rich group-hover:underline dark:text-nyay-authority">
@@ -227,7 +189,7 @@ export default function CasesListingPage() {
                       </td>
                       <td className="px-4 py-3 text-nyay-muted">
                         <Link
-                          href={`/dashboard/clients/${encodeURIComponent(effectiveClientId(c, overrides))}`}
+                          href={routes.client(effectiveClientId(c, overrides))}
                           className="rounded outline-none transition-colors hover:text-nyay-trust-mid focus-visible:ring-2 focus-visible:ring-nyay-authority/40 dark:hover:text-foreground"
                         >
                           {clientDisplayName(effectiveClientId(c, overrides), allClients)}
@@ -254,7 +216,7 @@ export default function CasesListingPage() {
                 <article className="flex h-full flex-col rounded-xl border border-nyay-border border-t-4 border-t-nyay-authority bg-nyay-surface p-4 nyay-card-shadow transition-shadow hover:shadow-lg hover:shadow-nyay-trust/10">
                   <div className="flex items-start justify-between gap-2">
                     <Link
-                      href={`/dashboard/cases/${encodeURIComponent(c.id)}`}
+                      href={routes.case(c.id)}
                       className="font-mono text-xs text-nyay-authority-rich outline-none hover:underline focus-visible:ring-2 focus-visible:ring-nyay-authority/50 dark:text-nyay-authority"
                     >
                       {c.id}
@@ -263,7 +225,7 @@ export default function CasesListingPage() {
                   </div>
                   <h2 className="mt-2 text-base font-semibold text-nyay-trust dark:text-foreground">
                     <Link
-                      href={`/dashboard/cases/${encodeURIComponent(c.id)}`}
+                      href={routes.case(c.id)}
                       className="outline-none hover:text-nyay-trust-mid focus-visible:ring-2 focus-visible:ring-nyay-authority/50 dark:hover:text-foreground"
                     >
                       {c.title}
@@ -271,7 +233,7 @@ export default function CasesListingPage() {
                   </h2>
                   <p className="mt-2 text-sm text-nyay-muted">
                     <Link
-                      href={`/dashboard/clients/${encodeURIComponent(effectiveClientId(c, overrides))}`}
+                      href={routes.client(effectiveClientId(c, overrides))}
                       className="rounded outline-none transition-colors hover:text-nyay-trust-mid focus-visible:ring-2 focus-visible:ring-nyay-authority/40 dark:hover:text-foreground"
                     >
                       {clientDisplayName(effectiveClientId(c, overrides), allClients)}
