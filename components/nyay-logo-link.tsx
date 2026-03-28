@@ -16,14 +16,14 @@ export function NyayLogoLink({
       href={href}
       className={`group inline-flex shrink-0 items-center rounded-md transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-nyay-authority ${className}`}
     >
-      <Image
-        src={NYAY_LOGO_SRC}
-        alt="Nyay Space"
-        width={360}
-        height={90}
-        className="h-12 w-auto max-h-12 object-contain object-left sm:h-14 sm:max-h-14 md:h-16 md:max-h-16"
-        priority
-      />
+     <Image
+  src={NYAY_LOGO_SRC}
+  alt="Nyay Space"
+  width={200}
+  height={200}
+  className="w-auto h-auto max-h-24 sm:max-h-28 md:max-h-30 object-contain"
+  priority
+/>
     </Link>
   );
 }

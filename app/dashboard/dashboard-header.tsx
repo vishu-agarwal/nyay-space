@@ -30,9 +30,9 @@ export function DashboardHeader() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [pathname]);
+  // useEffect(() => {
+  //   setMenuOpen(false);
+  // }, [pathname]);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -45,7 +45,7 @@ export function DashboardHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-nyay-border/90 bg-nyay-surface/90 shadow-[0_1px_0_rgba(201,162,39,0.12)] backdrop-blur-md dark:bg-[color-mix(in_srgb,var(--nyay-surface)_92%,transparent)] dark:shadow-[0_1px_0_rgba(212,184,74,0.1)]">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
+   <div className="mx-auto flex h-18 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <NyayLogoLink />
 
         <button
