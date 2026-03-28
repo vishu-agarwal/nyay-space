@@ -75,7 +75,7 @@ export function EntityPracticeNotes({ entity, entityId, labelId }: Props) {
   const count = notes.length;
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
+    <div className="flex flex-wrap items-center gap-2">
       <button
         type="button"
         onClick={() => setOpen(true)}

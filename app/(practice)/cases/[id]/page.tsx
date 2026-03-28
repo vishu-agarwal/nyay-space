@@ -49,8 +49,8 @@ export default async function CaseDetailPage({ params }: PageProps) {
 
   return (
     <div className="min-h-full font-sans text-foreground">
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-        <nav className="mb-6 text-sm text-nyay-muted" aria-label="Breadcrumb">
+      <div className="mx-auto max-w-7xl nyay-page-y">
+        <nav className="mb-4 text-sm text-nyay-muted" aria-label="Breadcrumb">
           <Link
             href={routes.home}
             className="font-semibold text-nyay-authority transition-colors hover:text-nyay-authority-rich"
@@ -80,8 +80,8 @@ export default async function CaseDetailPage({ params }: PageProps) {
             className="pointer-events-none absolute -bottom-16 left-1/3 h-48 w-48 rounded-full bg-white/5 blur-2xl"
             aria-hidden
           />
-          <div className="relative px-6 py-8 text-white sm:px-8 sm:py-10">
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+          <div className="relative px-5 py-6 text-white sm:px-6 sm:py-8">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="font-mono text-sm font-semibold tracking-wide text-nyay-authority">
@@ -119,7 +119,7 @@ export default async function CaseDetailPage({ params }: PageProps) {
               </div>
             </div>
 
-            <dl className="mt-8 grid gap-4 border-t border-white/10 pt-8 sm:grid-cols-2 lg:grid-cols-4">
+            <dl className="mt-6 grid gap-3 border-t border-white/10 pt-6 sm:grid-cols-2 lg:grid-cols-4">
               <div>
                 <CaseClientBlock matterId={matter.id} seedClientId={matter.clientId} />
               </div>
@@ -175,12 +175,12 @@ export default async function CaseDetailPage({ params }: PageProps) {
           </div>
         </header>
 
-        <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] xl:grid-cols-[minmax(0,1fr)_22rem]">
+        <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem] xl:grid-cols-[minmax(0,1fr)_22rem]">
           {/* Timeline — main */}
           <main aria-labelledby="timeline-heading">
             <h2
               id="timeline-heading"
-              className="mb-6 flex items-center gap-2 text-lg font-semibold text-nyay-trust dark:text-foreground"
+              className="mb-4 flex items-center gap-2 text-lg font-semibold text-nyay-trust dark:text-foreground"
             >
               <span
                 className="h-1 w-8 rounded-full bg-nyay-authority"
@@ -190,7 +190,7 @@ export default async function CaseDetailPage({ params }: PageProps) {
             </h2>
 
             {extra.timeline.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-nyay-border bg-nyay-surface px-6 py-12 text-center nyay-card-shadow">
+              <div className="rounded-xl border border-dashed border-nyay-border bg-nyay-surface px-5 py-8 text-center nyay-card-shadow">
                 <p className="font-medium text-nyay-trust dark:text-foreground">
                   No events yet
                 </p>
@@ -201,7 +201,7 @@ export default async function CaseDetailPage({ params }: PageProps) {
             ) : (
               <ol className="relative space-y-0 pl-0">
                 {extra.timeline.map((ev, index) => (
-                  <li key={ev.id} className="relative flex gap-0 pb-10 last:pb-0">
+                  <li key={ev.id} className="relative flex gap-0 pb-7 last:pb-0">
                     {index < extra.timeline.length - 1 ? (
                       <span
                         className="absolute left-21 top-4 bottom-0 w-px bg-linear-to-b from-nyay-authority/70 to-nyay-border dark:from-nyay-authority/50"
@@ -229,7 +229,7 @@ export default async function CaseDetailPage({ params }: PageProps) {
                     </div>
                     <article
                       id={`timeline-${ev.id}`}
-                      className="min-w-0 flex-1 scroll-mt-24 rounded-xl border border-nyay-border bg-nyay-surface p-4 nyay-card-shadow transition-shadow hover:shadow-lg hover:shadow-nyay-trust/8 sm:p-5"
+                      className="min-w-0 flex-1 scroll-mt-24 rounded-xl border border-nyay-border bg-nyay-surface p-3 nyay-card-shadow transition-shadow hover:shadow-lg hover:shadow-nyay-trust/8 sm:p-4"
                     >
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="rounded-md bg-nyay-authority-soft px-2 py-0.5 text-xs font-semibold text-nyay-authority-fg dark:text-nyay-authority">
@@ -250,19 +250,19 @@ export default async function CaseDetailPage({ params }: PageProps) {
               </ol>
             )}
 
-            <div className="mt-10">
+            <div className="mt-6">
               <EntityPracticeNotes entity="case" entityId={matter.id} />
             </div>
           </main>
 
           {/* Documents — side */}
           <aside
-            className="lg:sticky lg:top-8 lg:self-start"
+            className="lg:sticky lg:top-6 lg:self-start"
             aria-labelledby="documents-heading"
           >
             <h2
               id="documents-heading"
-              className="mb-4 flex items-center gap-2 text-lg font-semibold text-nyay-trust dark:text-foreground"
+              className="mb-3 flex items-center gap-2 text-lg font-semibold text-nyay-trust dark:text-foreground"
             >
               <span
                 className="h-1 w-8 rounded-full bg-nyay-authority"
@@ -272,7 +272,7 @@ export default async function CaseDetailPage({ params }: PageProps) {
             </h2>
             <div className="rounded-xl border border-nyay-border bg-nyay-surface p-1 nyay-card-shadow">
               {extra.documents.length === 0 ? (
-                <div className="px-4 py-10 text-center">
+                <div className="px-3 py-7 text-center">
                   <p className="text-sm font-medium text-nyay-trust dark:text-foreground">
                     No documents
                   </p>

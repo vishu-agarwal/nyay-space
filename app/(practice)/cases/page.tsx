@@ -37,8 +37,8 @@ export default function CasesListingPage() {
 
   return (
     <div className="min-h-full font-sans text-foreground">
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-        <header className="mb-8 border-b border-nyay-border pb-6">
+      <div className="mx-auto max-w-7xl nyay-page-y">
+        <header className="mb-5 border-b border-nyay-border pb-4">
           <PracticeListingKicker section="Cases" />
           <h1 className="mt-2 text-2xl font-semibold tracking-tight text-nyay-trust sm:text-3xl dark:text-foreground">
             Case listing
@@ -49,7 +49,7 @@ export default function CasesListingPage() {
         </header>
 
         <div
-          className="mb-6 flex flex-col gap-4 rounded-xl border border-nyay-border bg-nyay-surface p-4 nyay-card-shadow sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
+          className="mb-4 flex flex-col gap-3 rounded-xl border border-nyay-border bg-nyay-surface p-3 nyay-card-shadow sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
           role="search"
         >
           <label className="relative min-w-[min(100%,280px)] flex-1">
@@ -128,7 +128,7 @@ export default function CasesListingPage() {
           </div>
         </div>
 
-        <p className="mb-4 text-sm text-nyay-muted" aria-live="polite">
+        <p className="mb-3 text-sm text-nyay-muted" aria-live="polite">
           {filtered.length === matters.length
             ? `${matters.length} matters`
             : `${filtered.length} of ${matters.length} matters`}
@@ -210,10 +210,10 @@ export default function CasesListingPage() {
             </div>
           </div>
         ) : (
-          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((c) => (
               <li key={c.id}>
-                <article className="flex h-full flex-col rounded-xl border border-nyay-border border-t-4 border-t-nyay-authority bg-nyay-surface p-4 nyay-card-shadow transition-shadow hover:shadow-lg hover:shadow-nyay-trust/10">
+                <article className="flex h-full flex-col rounded-xl border border-nyay-border border-t-4 border-t-nyay-authority bg-nyay-surface p-3 nyay-card-shadow transition-shadow hover:shadow-lg hover:shadow-nyay-trust/10">
                   <div className="flex items-start justify-between gap-2">
                     <Link
                       href={routes.case(c.id)}

@@ -4,7 +4,7 @@ import { NYAY_LOGO_SRC } from "@/lib/nyay-logo";
 export default function Loading() {
   return (
     <div
-      className="flex flex-1 flex-col items-center justify-center gap-6 px-4 py-24"
+      className="flex flex-1 flex-col items-center justify-center gap-4 py-16 nyay-page-x"
       role="status"
       aria-live="polite"
       aria-label="Loading"

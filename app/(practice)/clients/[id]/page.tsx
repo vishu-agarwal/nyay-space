@@ -88,7 +88,7 @@ export default function ClientDetailPage() {
   if (!hydrated) {
     return (
       <div className="min-h-full font-sans text-foreground">
-        <div className="mx-auto max-w-6xl px-4 py-16 text-center text-sm text-nyay-muted">
+        <div className="mx-auto max-w-7xl py-12 text-center text-sm text-nyay-muted nyay-page-x">
           Loading…
         </div>
       </div>
@@ -107,8 +107,8 @@ export default function ClientDetailPage() {
 
   return (
     <div className="min-h-full font-sans text-foreground">
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-        <nav className="mb-6 text-sm text-nyay-muted" aria-label="Breadcrumb">
+      <div className="mx-auto max-w-7xl nyay-page-y">
+        <nav className="mb-4 text-sm text-nyay-muted" aria-label="Breadcrumb">
           <Link
             href={routes.home}
             className="font-semibold text-nyay-authority transition-colors hover:text-nyay-authority-rich"
@@ -131,11 +131,11 @@ export default function ClientDetailPage() {
             className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-nyay-authority/15 blur-3xl"
             aria-hidden
           />
-          <div className="relative px-6 py-8 text-white sm:px-8 sm:py-10">
+          <div className="relative px-5 py-6 text-white sm:px-6 sm:py-8">
             <p className="text-xs font-semibold uppercase tracking-wider text-nyay-authority">
               Client
             </p>
-            <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div className="min-w-0">
                 <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{client.name}</h1>
                 {client.organization ? (
@@ -159,7 +159,7 @@ export default function ClientDetailPage() {
                 </button>
               </div>
             </div>
-            <dl className="mt-8 grid gap-4 border-t border-white/10 pt-8 sm:grid-cols-2">
+            <dl className="mt-6 grid gap-3 border-t border-white/10 pt-6 sm:grid-cols-2">
               <div>
                 <dt className="text-xs font-semibold uppercase tracking-wider text-nyay-authority/90">
                   Email
@@ -189,7 +189,7 @@ export default function ClientDetailPage() {
               ) : null}
             </dl>
             {!CLIENTS_SEED.some((c) => c.id === clientId) ? (
-              <div className="mt-6 border-t border-white/10 pt-6">
+              <div className="mt-5 border-t border-white/10 pt-5">
                 <button
                   type="button"
                   onClick={() => {
@@ -209,20 +209,20 @@ export default function ClientDetailPage() {
           </div>
         </header>
 
-        <div className="mt-10">
+        <div className="mt-6">
           <EntityPracticeNotes entity="client" entityId={clientId} />
         </div>
 
-        <section aria-labelledby="matters-heading" className="mt-10">
+        <section aria-labelledby="matters-heading" className="mt-6">
           <h2
             id="matters-heading"
-            className="mb-4 flex items-center gap-2 text-lg font-semibold text-nyay-trust dark:text-foreground"
+            className="mb-3 flex items-center gap-2 text-lg font-semibold text-nyay-trust dark:text-foreground"
           >
             <span className="h-1 w-8 rounded-full bg-nyay-authority" aria-hidden />
             Linked matters
           </h2>
           {linkedMatters.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-nyay-border bg-nyay-surface px-6 py-10 text-center">
+            <div className="rounded-xl border border-dashed border-nyay-border bg-nyay-surface px-5 py-7 text-center">
               <p className="font-medium text-nyay-trust dark:text-foreground">No matters yet</p>
               <p className="mt-1 text-sm text-nyay-muted">
                 Link a matter below. Demo data uses your browser storage for assignments.
@@ -233,7 +233,7 @@ export default function ClientDetailPage() {
               {linkedMatters.map((m) => (
                 <li
                   key={m.id}
-                  className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-nyay-border bg-nyay-surface px-4 py-3 nyay-card-shadow"
+                  className="flex flex-wrap items-center justify-between gap-2.5 rounded-xl border border-nyay-border bg-nyay-surface px-3 py-2.5 nyay-card-shadow"
                 >
                   <div className="min-w-0">
                     <Link
@@ -266,7 +266,7 @@ export default function ClientDetailPage() {
 
         <section
           aria-labelledby="link-matter-heading"
-          className="mt-8 rounded-xl border border-nyay-border bg-nyay-surface p-5 nyay-card-shadow"
+          className="mt-6 rounded-xl border border-nyay-border bg-nyay-surface p-4 nyay-card-shadow"
         >
           <h2
             id="link-matter-heading"
@@ -277,7 +277,7 @@ export default function ClientDetailPage() {
           <p className="mt-1 text-xs text-nyay-muted">
             Assign any matter to this client. This updates listings and the case header for this browser.
           </p>
-          <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
+          <div className="mt-3 flex flex-col gap-2.5 sm:flex-row sm:items-end">
             <label className="min-w-0 flex-1">
               <span className="block text-xs font-medium text-nyay-trust-mid dark:text-foreground/90">
                 Matter

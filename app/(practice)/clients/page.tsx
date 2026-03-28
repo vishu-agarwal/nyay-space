@@ -58,8 +58,8 @@ export default function ClientsPage() {
 
   return (
     <div className="min-h-full font-sans text-foreground">
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-        <header className="mb-8 flex flex-col gap-4 border-b border-nyay-border pb-6 sm:flex-row sm:items-end sm:justify-between">
+      <div className="mx-auto max-w-7xl nyay-page-y">
+        <header className="mb-5 flex flex-col gap-3 border-b border-nyay-border pb-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <PracticeListingKicker section="Clients" />
             <h1 className="mt-2 text-2xl font-semibold tracking-tight text-nyay-trust sm:text-3xl dark:text-foreground">
@@ -82,7 +82,7 @@ export default function ClientsPage() {
         <section aria-labelledby="clients-list-heading">
           <h2
             id="clients-list-heading"
-            className="mb-4 flex items-center gap-2 text-lg font-semibold text-nyay-trust dark:text-foreground"
+            className="mb-3 flex items-center gap-2 text-lg font-semibold text-nyay-trust dark:text-foreground"
           >
             <span className="h-1 w-6 rounded-full bg-nyay-authority" aria-hidden />
             All clients

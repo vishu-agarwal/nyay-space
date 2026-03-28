@@ -43,7 +43,7 @@ export function PracticeHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-nyay-border/90 bg-nyay-surface/90 shadow-[0_1px_0_rgba(201,162,39,0.12)] backdrop-blur-md dark:bg-[color-mix(in_srgb,var(--nyay-surface)_92%,transparent)] dark:shadow-[0_1px_0_rgba(212,184,74,0.1)]">
-      <div className="mx-auto flex h-18 max-w-6xl min-w-0 items-center gap-2 px-4 sm:gap-3 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-18 max-w-7xl min-w-0 items-center gap-2 nyay-page-x sm:gap-3">
         <NyayLogoLink className="shrink-0" />
 
         <div className="flex min-w-0 flex-1 justify-end md:justify-start">
@@ -115,7 +115,7 @@ export function PracticeHeader() {
         ].join(" ")}
       >
         <nav
-          className="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-3 sm:px-6 lg:px-8"
+          className="mx-auto flex max-w-7xl flex-col gap-1 py-2.5 nyay-page-x"
           aria-label="Practice mobile"
         >
           {nav.map(({ href, label, match }) => {

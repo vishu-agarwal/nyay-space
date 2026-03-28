@@ -184,8 +184,8 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-full font-sans text-foreground">
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-        <header className="mb-8 border-b border-nyay-border pb-6">
+      <div className="mx-auto max-w-7xl nyay-page-y">
+        <header className="mb-5 border-b border-nyay-border pb-4">
           <p className="text-sm font-semibold tracking-wide text-nyay-authority uppercase">
             Workspace
           </p>
@@ -197,10 +197,10 @@ export default function DashboardPage() {
           </p>
         </header>
 
-        <section aria-labelledby="quick-stats-heading" className="mb-10">
+        <section aria-labelledby="quick-stats-heading" className="mb-6">
           <h2
             id="quick-stats-heading"
-            className="mb-4 flex items-center gap-2 text-lg font-semibold text-nyay-trust dark:text-foreground"
+            className="mb-3 flex items-center gap-2 text-lg font-semibold text-nyay-trust dark:text-foreground"
           >
             <span
               className="h-1 w-6 rounded-full bg-nyay-authority"
@@ -208,7 +208,7 @@ export default function DashboardPage() {
             />
             Quick stats
           </h2>
-          <ul className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
+          <ul className="grid gap-2.5 sm:grid-cols-2 sm:gap-3 lg:grid-cols-4">
             {statsWithReminders.map((s) => {
               const iconWell =
                 s.iconTone === "trust"
@@ -217,7 +217,7 @@ export default function DashboardPage() {
               return (
                 <li
                   key={s.label}
-                  className="flex gap-4 rounded-2xl border border-nyay-border bg-nyay-surface p-4 nyay-card-shadow transition-[box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:shadow-[var(--nyay-card),0_8px_24px_-8px_rgba(15,40,71,0.12)] dark:hover:shadow-[var(--nyay-card),0_8px_24px_-8px_rgba(0,0,0,0.35)]"
+                  className="flex gap-3 rounded-2xl border border-nyay-border bg-nyay-surface p-3 nyay-card-shadow transition-[box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:shadow-[var(--nyay-card),0_8px_24px_-8px_rgba(15,40,71,0.12)] dark:hover:shadow-[var(--nyay-card),0_8px_24px_-8px_rgba(0,0,0,0.35)]"
                 >
                   <div
                     className={[
@@ -248,11 +248,11 @@ export default function DashboardPage() {
           </ul>
         </section>
 
-        <div className="grid gap-8 lg:grid-cols-2">
+        <div className="grid gap-5 lg:grid-cols-2">
           <section aria-labelledby="hearings-heading">
             <h2
               id="hearings-heading"
-              className="mb-4 flex items-center gap-2 text-lg font-semibold text-nyay-trust dark:text-foreground"
+              className="mb-3 flex items-center gap-2 text-lg font-semibold text-nyay-trust dark:text-foreground"
             >
               <span
                 className="h-1 w-6 rounded-full bg-nyay-authority"
@@ -268,16 +268,16 @@ export default function DashboardPage() {
                 Open full calendar
               </Link>
             </p>
-            <ul className="space-y-3">
+            <ul className="space-y-2.5">
               {upcomingHearings.length === 0 ? (
-                <li className="rounded-xl border border-nyay-border bg-nyay-surface p-4 text-sm text-nyay-muted nyay-card-shadow">
+                <li className="rounded-xl border border-nyay-border bg-nyay-surface p-3 text-sm text-nyay-muted nyay-card-shadow">
                   No upcoming hearings in the loaded matters.
                 </li>
               ) : (
                 upcomingHearings.map((h) => (
                   <li
                     key={h.id}
-                    className="rounded-xl border border-nyay-border border-l-4 border-l-nyay-authority bg-nyay-surface p-4 pl-3 nyay-card-shadow"
+                    className="rounded-xl border border-nyay-border border-l-4 border-l-nyay-authority bg-nyay-surface p-3 pl-2.5 nyay-card-shadow"
                   >
                     <div className="flex flex-wrap items-baseline justify-between gap-2">
                       <p className="text-sm font-semibold text-nyay-authority-rich dark:text-nyay-authority">
@@ -309,7 +309,7 @@ export default function DashboardPage() {
           <section aria-labelledby="deadlines-heading">
             <h2
               id="deadlines-heading"
-              className="mb-4 flex items-center gap-2 text-lg font-semibold text-nyay-trust dark:text-foreground"
+              className="mb-3 flex items-center gap-2 text-lg font-semibold text-nyay-trust dark:text-foreground"
             >
               <span
                 className="h-1 w-6 rounded-full bg-nyay-authority"
@@ -317,16 +317,16 @@ export default function DashboardPage() {
               />
               Upcoming deadlines
             </h2>
-            <ul className="space-y-3">
+            <ul className="space-y-2.5">
               {upcomingDeadlines.length === 0 ? (
-                <li className="rounded-xl border border-nyay-border bg-nyay-surface p-4 text-sm text-nyay-muted nyay-card-shadow">
+                <li className="rounded-xl border border-nyay-border bg-nyay-surface p-3 text-sm text-nyay-muted nyay-card-shadow">
                   No upcoming deadlines in the loaded data.
                 </li>
               ) : (
                 upcomingDeadlines.map((d) => (
                   <li
                     key={d.id}
-                    className="flex items-start justify-between gap-3 rounded-xl border border-nyay-border bg-nyay-surface p-4 nyay-card-shadow"
+                    className="flex items-start justify-between gap-2.5 rounded-xl border border-nyay-border bg-nyay-surface p-3 nyay-card-shadow"
                   >
                     <div className="min-w-0">
                       <p className="font-medium text-nyay-trust dark:text-foreground">
@@ -357,10 +357,10 @@ export default function DashboardPage() {
           </section>
         </div>
 
-        <section aria-labelledby="active-cases-heading" className="mt-10">
+        <section aria-labelledby="active-cases-heading" className="mt-6">
           <h2
             id="active-cases-heading"
-            className="mb-4 flex items-center gap-2 text-lg font-semibold text-nyay-trust dark:text-foreground"
+            className="mb-3 flex items-center gap-2 text-lg font-semibold text-nyay-trust dark:text-foreground"
           >
             <span
               className="h-1 w-6 rounded-full bg-nyay-authority"

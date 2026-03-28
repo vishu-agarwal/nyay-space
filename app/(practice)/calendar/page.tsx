@@ -4,8 +4,8 @@ import { AdvocateCalendar } from "@/components/practice/advocate-calendar";
 export default function CalendarPage() {
   return (
     <div className="min-h-full font-sans text-foreground">
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-7 lg:px-8">
-        <header className="border-b border-nyay-border pb-4 sm:pb-5">
+      <div className="mx-auto max-w-7xl nyay-page-y">
+        <header className="border-b border-nyay-border pb-3 sm:pb-4">
           <PracticeListingKicker section="Calendar" />
           <h1 className="mt-1.5 text-xl font-semibold tracking-tight text-nyay-trust sm:text-2xl dark:text-foreground">
             Calendar &amp; reminders
@@ -18,7 +18,7 @@ export default function CalendarPage() {
           </p>
         </header>
 
-        <main className="mt-5 min-w-0 sm:mt-6" aria-label="Calendar and diary">
+        <main className="mt-4 min-w-0 sm:mt-5" aria-label="Calendar and diary">
           <AdvocateCalendar />
         </main>
       </div>

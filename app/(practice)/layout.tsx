@@ -9,7 +9,7 @@ export default function PracticeLayout({
   return (
     <div className="nyay-dashboard-shell flex min-h-0 flex-1 flex-col">
       <PracticeHeader />
-      <div className="flex-1">{children}</div>
+      <div className="min-h-0 flex-1 nyay-page-x">{children}</div>
       <PracticeQuickAddFab />
     </div>
   );

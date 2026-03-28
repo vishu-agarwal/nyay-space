@@ -401,12 +401,12 @@ export function AdvocateCalendar() {
   );
 
   return (
-    <div className="flex min-w-0 flex-col gap-5 lg:grid lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start lg:gap-x-8 lg:gap-y-0">
-      <aside className="order-1 min-h-0 w-full min-w-0 space-y-3 sm:space-y-4">
-        <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 sm:items-stretch sm:gap-4">
+    <div className="flex min-w-0 flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start lg:gap-x-4 lg:gap-y-0">
+      <aside className="order-1 min-h-0 w-full min-w-0 space-y-2 sm:space-y-3">
+        <div className="grid min-w-0 grid-cols-1 gap-2.5 sm:grid-cols-2 sm:items-stretch sm:gap-3">
           <section
             aria-labelledby="today-diary-heading"
-            className="flex min-h-0 min-w-0 flex-col rounded-lg border border-nyay-border bg-nyay-surface p-3 nyay-card-shadow"
+            className="flex min-h-0 min-w-0 flex-col rounded-lg border border-nyay-border bg-nyay-surface p-2.5 nyay-card-shadow"
           >
             <div className="flex shrink-0 flex-wrap items-baseline justify-between gap-2">
               <h2
@@ -448,7 +448,7 @@ export function AdvocateCalendar() {
 
           <section
             aria-labelledby="selected-day-heading"
-            className="flex min-h-0 min-w-0 flex-col rounded-lg border border-nyay-border bg-nyay-surface p-3 nyay-card-shadow"
+            className="flex min-h-0 min-w-0 flex-col rounded-lg border border-nyay-border bg-nyay-surface p-2.5 nyay-card-shadow"
           >
             <h2
               id="selected-day-heading"
@@ -484,7 +484,7 @@ export function AdvocateCalendar() {
         </div>
 
         <div
-          className="grid min-h-0 grid-cols-1 gap-3 sm:h-80 sm:grid-cols-2 sm:items-stretch sm:gap-4"
+          className="grid min-h-0 grid-cols-1 gap-2.5 sm:h-80 sm:grid-cols-2 sm:items-stretch sm:gap-3"
           aria-label="Upcoming and recent entries"
         >
           <section
@@ -582,7 +582,7 @@ export function AdvocateCalendar() {
         </p>
       </aside>
 
-      <div className="order-2 mx-auto flex w-full max-w-[17.5rem] shrink-0 flex-col gap-2 lg:sticky lg:top-6 lg:mx-0 lg:self-start">
+      <div className="order-2 mx-auto flex w-full max-w-[20 rem] shrink-0 flex-col gap-2 lg:sticky lg:top-6 lg:mx-0 lg:self-start">
         <div
           className="rounded-lg border border-nyay-border bg-nyay-surface p-2.5 nyay-card-shadow"
           aria-labelledby="jump-date-heading"
@@ -658,9 +658,9 @@ export function AdvocateCalendar() {
           </div>
         </div>
 
-        <section
+        <section  
           aria-labelledby="month-calendar-heading"
-          className="w-full overflow-visible rounded-lg border border-nyay-border bg-nyay-surface p-2.5 nyay-card-shadow"
+          className="w-full overflow-visible rounded-lg border border-nyay-border bg-nyay-surface p-2 nyay-card-shadow"
         >
         <div className="mb-1.5 flex items-center justify-between gap-1">
           <h2
@@ -675,7 +675,7 @@ export function AdvocateCalendar() {
               onClick={() => setCursor((c) => shiftMonth(c.y, c.m, -1))}
               title="Previous month"
               aria-label="Previous month"
-              className="inline-flex size-7 items-center justify-center rounded border border-nyay-border text-nyay-trust transition-colors hover:bg-nyay-canvas dark:text-foreground dark:hover:bg-nyay-trust/10"
+              className="inline-flex size-5.5 items-center justify-center rounded border border-nyay-border text-nyay-trust transition-colors hover:bg-nyay-canvas dark:text-foreground dark:hover:bg-nyay-trust/10"
             >
               <MaskIcon name="chevron-left" className="size-3.5" />
             </button>
@@ -693,7 +693,7 @@ export function AdvocateCalendar() {
               onClick={() => setCursor((c) => shiftMonth(c.y, c.m, 1))}
               title="Next month"
               aria-label="Next month"
-              className="inline-flex size-7 items-center justify-center rounded border border-nyay-border text-nyay-trust transition-colors hover:bg-nyay-canvas dark:text-foreground dark:hover:bg-nyay-trust/10"
+              className="inline-flex size-5.5 items-center justify-center rounded border border-nyay-border text-nyay-trust transition-colors hover:bg-nyay-canvas dark:text-foreground dark:hover:bg-nyay-trust/10"
             >
               <MaskIcon name="chevron-right" className="size-3.5" />
             </button>

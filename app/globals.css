@@ -85,6 +85,39 @@ dialog.nyay-app-modal::backdrop {
 }
 
 /* Whisper of navy + gold — avoids a tinted “blue screen” */
+/* Horizontal inset aligned with practice header/footer (tighter than Tailwind’s px-4/sm:px-6/lg:px-8). */
+.nyay-page-x {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .nyay-page-x {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .nyay-page-x {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+}
+
+/* Default vertical padding for main practice (and similar) page shells. */
+.nyay-page-y {
+  padding-top: 1.25rem;
+  padding-bottom: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .nyay-page-y {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+}
+
 .nyay-dashboard-shell {
   min-height: 100%;
   background-color: var(--nyay-canvas);

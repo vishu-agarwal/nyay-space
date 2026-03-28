@@ -18,12 +18,12 @@ export default function Error({
   return (
     <div className="flex flex-1 flex-col bg-nyay-canvas">
       <header className="sticky top-0 z-40 border-b border-nyay-border/90 bg-nyay-surface/90 shadow-[0_1px_0_rgba(201,162,39,0.12)] backdrop-blur-md dark:bg-[color-mix(in_srgb,var(--nyay-surface)_92%,transparent)] dark:shadow-[0_1px_0_rgba(212,184,74,0.1)]">
-        <div className="mx-auto flex max-w-6xl items-center px-4 py-3 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-7xl items-center py-2.5 nyay-page-x">
           <NyayLogoLink />
         </div>
       </header>
 
-      <div className="flex flex-1 flex-col items-center justify-center px-4 py-12 text-center sm:py-16">
+      <div className="flex flex-1 flex-col items-center justify-center py-8 text-center nyay-page-x sm:py-10">
         <h1 className="text-xl font-semibold text-nyay-trust sm:text-2xl dark:text-foreground">
           Something went wrong
         </h1>
@@ -31,7 +31,7 @@ export default function Error({
           We could not load this page. You can try again or return to the
           home page.
         </p>
-        <div className="mt-8 flex w-full max-w-xs flex-col gap-3 sm:max-w-none sm:flex-row sm:justify-center">
+        <div className="mt-6 flex w-full max-w-xs flex-col gap-2.5 sm:max-w-none sm:flex-row sm:justify-center">
           <button
             type="button"
             onClick={() => reset()}

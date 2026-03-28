@@ -17,7 +17,7 @@ function CasePracticeIllustration({ className = "" }: { className?: string }) {
 
 export function AuthHeroPanel({ title, subtitle }: AuthHeroPanelProps) {
   return (
-    <div className="relative flex min-h-[200px] flex-col justify-end overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-nyay-trust via-[#15365c] to-[#0c1f36] p-6 shadow-[var(--nyay-elevate)] sm:min-h-[260px] sm:p-8 lg:min-h-0 lg:flex-1 lg:justify-between lg:p-10 dark:from-[#0e1f38] dark:via-[#152f52] dark:to-[#0a1628]">
+    <div className="relative flex min-h-[200px] flex-col justify-end overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-nyay-trust via-[#15365c] to-[#0c1f36] p-5 shadow-[var(--nyay-elevate)] sm:min-h-[260px] sm:p-6 lg:min-h-0 lg:flex-1 lg:justify-between lg:p-8 dark:from-[#0e1f38] dark:via-[#152f52] dark:to-[#0a1628]">
       <div
         className="pointer-events-none absolute -right-8 -top-16 h-56 w-56 rounded-full bg-nyay-authority/20 blur-3xl sm:h-72 sm:w-72"
         aria-hidden
@@ -29,7 +29,7 @@ export function AuthHeroPanel({ title, subtitle }: AuthHeroPanelProps) {
 
       <div className="relative z-[1] flex flex-1 flex-col lg:min-h-[min(420px,50vh)]">
         <CasePracticeIllustration className="mx-auto mt-2 w-full max-w-[min(100%,320px)] opacity-95 sm:max-w-[380px] lg:mx-0 lg:mt-0 lg:max-w-none lg:flex-1" />
-        <div className="relative z-[1] mt-4 text-center lg:mt-8 lg:text-left">
+        <div className="relative z-[1] mt-3 text-center lg:mt-6 lg:text-left">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-nyay-authority/90">
             Nyay Space
           </p>
