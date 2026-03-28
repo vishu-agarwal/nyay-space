@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { SiteFooter } from "@/components/site-footer";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,7 +14,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Nyay Space",
+  title: {
+    default: "Nyay Space",
+    template: "%s · Nyay Space",
+  },
   description: `
   NyayHub is a modern legal case management and consultation platform designed to simplify the daily workflow of advocates. It helps legal professionals efficiently manage clients, track cases, organize documents, and stay updated with important hearings and deadlines—all in one place.
 
@@ -33,7 +37,10 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        <main className="flex min-h-0 flex-1 flex-col">{children}</main>
+        <SiteFooter />
+      </body>
     </html>
   );
 }

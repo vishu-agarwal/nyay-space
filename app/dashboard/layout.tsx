@@ -6,7 +6,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="nyay-dashboard-shell flex min-h-full flex-col">
+    <div className="nyay-dashboard-shell flex min-h-0 flex-1 flex-col">
       <DashboardHeader />
       <div className="flex-1">{children}</div>
     </div>
