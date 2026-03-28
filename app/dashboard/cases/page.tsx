@@ -113,25 +113,55 @@ export default function CasesListingPage() {
               type="button"
               onClick={() => setView("list")}
               aria-pressed={view === "list"}
-              className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+              title="List view"
+              aria-label="List view"
+              className={`flex items-center justify-center rounded-md p-2 transition-colors ${
                 view === "list"
                   ? "bg-nyay-authority-soft text-nyay-authority-fg ring-1 ring-nyay-authority/40 dark:text-nyay-authority"
                   : "text-nyay-muted hover:text-nyay-trust dark:hover:text-foreground"
               }`}
             >
-              List
+              <svg
+                className="h-4 w-4 shrink-0"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
             </button>
             <button
               type="button"
               onClick={() => setView("card")}
               aria-pressed={view === "card"}
-              className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+              title="Card view"
+              aria-label="Card view"
+              className={`flex items-center justify-center rounded-md p-2 transition-colors ${
                 view === "card"
                   ? "bg-nyay-authority-soft text-nyay-authority-fg ring-1 ring-nyay-authority/40 dark:text-nyay-authority"
                   : "text-nyay-muted hover:text-nyay-trust dark:hover:text-foreground"
               }`}
             >
-              Cards
+              <svg
+                className="h-4 w-4 shrink-0"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"
+                />
+              </svg>
             </button>
           </div>
         </div>

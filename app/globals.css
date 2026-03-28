@@ -68,6 +68,17 @@ body {
   font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
 
+/* Native <dialog>: Tailwind preflight zeros margin and breaks UA centering; backdrop needs explicit styling. */
+dialog.nyay-app-modal::backdrop {
+  background: rgb(15 40 71 / 0.45);
+}
+
+@media (prefers-color-scheme: dark) {
+  dialog.nyay-app-modal::backdrop {
+    background: rgb(0 0 0 / 0.55);
+  }
+}
+
 ::selection {
   background: rgba(201, 162, 39, 0.28);
   color: var(--nyay-trust);

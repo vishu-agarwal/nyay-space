@@ -3,6 +3,9 @@
 import Link from "next/link";
 import { useParams, notFound, useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
+import { ClientFormModal } from "@/components/clients/client-form-modal";
+import { ClientContactActions } from "@/components/contact/client-contact-actions";
+import { SupportWhatsAppDraftModal } from "@/components/contact/support-whatsapp-draft-modal";
 import { matters, type Matter } from "@/lib/cases";
 import {
   CLIENTS_SEED,
@@ -18,6 +21,13 @@ import {
 } from "@/lib/matter-client-overrides";
 import { useNyayStorage } from "@/lib/use-nyay-storage";
 
+function newClientId(): string {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return `cl-${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`;
+  }
+  return `cl-${Date.now().toString(36)}`;
+}
+
 export default function ClientDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -26,6 +36,8 @@ export default function ClientDetailPage() {
 
   const { extraClients, overrides, hydrated } = useNyayStorage();
   const [linkMatterId, setLinkMatterId] = useState("");
+  const [editOpen, setEditOpen] = useState(false);
+  const [supportOpen, setSupportOpen] = useState(false);
 
   const allClients = useMemo(
     () => mergeClients(extraClients),
@@ -112,7 +124,7 @@ export default function ClientDetailPage() {
           <span className="text-nyay-trust dark:text-foreground">{client.name}</span>
         </nav>
 
-        <header className="relative overflow-hidden rounded-2xl border border-white/15 bg-nyay-trust nyay-hero-shadow dark:border-white/10 dark:bg-[#0b1e36]">
+        <header className="relative overflow-hidden rounded-2xl border border-white/15 bg-nyay-trust-soft nyay-hero-shadow dark:border-white/10 dark:bg-nyay-trust-mid">
           <div
             className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-nyay-authority/15 blur-3xl"
             aria-hidden
@@ -121,10 +133,30 @@ export default function ClientDetailPage() {
             <p className="text-xs font-semibold uppercase tracking-wider text-nyay-authority">
               Client
             </p>
-            <h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">{client.name}</h1>
-            {client.organization ? (
-              <p className="mt-2 text-sm text-white/80">{client.organization}</p>
-            ) : null}
+            <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div className="min-w-0">
+                <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{client.name}</h1>
+                {client.organization ? (
+                  <p className="mt-2 text-sm text-white/80">{client.organization}</p>
+                ) : null}
+              </div>
+              <div className="flex shrink-0 flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => setEditOpen(true)}
+                  className="rounded-lg border border-white/25 bg-white/10 px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-nyay-authority/60"
+                >
+                  Edit client
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSupportOpen(true)}
+                  className="rounded-lg border border-white/25 bg-white/10 px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-white/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-nyay-authority/60"
+                >
+                  Draft message to support
+                </button>
+              </div>
+            </div>
             <dl className="mt-8 grid gap-4 border-t border-white/10 pt-8 sm:grid-cols-2">
               <div>
                 <dt className="text-xs font-semibold uppercase tracking-wider text-nyay-authority/90">
@@ -140,7 +172,10 @@ export default function ClientDetailPage() {
                 <dt className="text-xs font-semibold uppercase tracking-wider text-nyay-authority/90">
                   Phone
                 </dt>
-                <dd className="mt-1 text-sm font-medium tabular-nums text-white">{client.phone}</dd>
+                <dd className="mt-1 space-y-2">
+                  <span className="block text-sm font-medium tabular-nums text-white">{client.phone}</span>
+                  <ClientContactActions client={client} variant="onDark" />
+                </dd>
               </div>
               {client.notes ? (
                 <div className="sm:col-span-2">
@@ -266,6 +301,15 @@ export default function ClientDetailPage() {
           </div>
         </section>
       </div>
+
+      <ClientFormModal
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        mode="edit"
+        initialClient={client}
+        buildNewId={newClientId}
+      />
+      <SupportWhatsAppDraftModal open={supportOpen} onOpenChange={setSupportOpen} />
     </div>
   );
 }

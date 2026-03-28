@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     template: "%s · Nyay Space",
   },
   description: `
-  NyayHub is a modern legal case management and consultation platform designed to simplify the daily workflow of advocates. It helps legal professionals efficiently manage clients, track cases, organize documents, and stay updated with important hearings and deadlines—all in one place.
+  NyayHub is a modern legal case management and consultation platform—and the single source of truth for an advocate’s practice. It helps legal professionals efficiently manage clients, track cases, organize documents, and stay updated with important hearings and deadlines in one reliable system instead of scattered notes and files.
 
   The platform provides a structured and intuitive interface where advocates can maintain case timelines, store and access legal documents, and manage client interactions seamlessly. It also enables online consultation and appointment scheduling, making it easier for clients to connect and communicate.
 

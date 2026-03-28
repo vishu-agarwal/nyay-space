@@ -67,8 +67,8 @@ export default async function CaseDetailPage({ params }: PageProps) {
           </span>
         </nav>
 
-        {/* Case info — deep blue (trust) + gold (authority) accents */}
-        <header className="relative overflow-hidden rounded-2xl border border-white/15 bg-nyay-trust nyay-hero-shadow dark:border-white/10 dark:bg-[#0b1e36]">
+        {/* Case info — trust blue + gold (authority) accents */}
+        <header className="relative overflow-hidden rounded-2xl border border-white/15 bg-nyay-trust-soft nyay-hero-shadow dark:border-white/10 dark:bg-nyay-trust-mid">
           <div
             className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-nyay-authority/15 blur-3xl"
             aria-hidden

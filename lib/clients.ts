@@ -8,6 +8,8 @@ export type Client = {
   name: string;
   email: string;
   phone: string;
+  /** If set, used for WhatsApp; otherwise `phone` is used for wa.me. */
+  whatsappPhone?: string;
   organization?: string;
   notes?: string;
 };
@@ -84,15 +86,27 @@ export function saveExtraClients(clients: Client[]): void {
   notifyNyayStorageChanged();
 }
 
+/** Add or replace a client in browser storage (covers edits to seed clients by id). */
+export function upsertExtraClient(client: Client): void {
+  const extra = loadExtraClients();
+  const i = extra.findIndex((c) => c.id === client.id);
+  if (i >= 0) extra[i] = client;
+  else extra.push(client);
+  saveExtraClients(extra);
+}
+
 function isClientShape(x: unknown): x is Client {
   if (x === null || typeof x !== "object") return false;
   const o = x as Record<string, unknown>;
-  return (
+  const base =
     typeof o.id === "string" &&
     typeof o.name === "string" &&
     typeof o.email === "string" &&
-    typeof o.phone === "string"
-  );
+    typeof o.phone === "string";
+  if (!base) return false;
+  if (o.whatsappPhone !== undefined && typeof o.whatsappPhone !== "string")
+    return false;
+  return true;
 }
 
 export function mergeClients(extra: Client[]): Client[] {

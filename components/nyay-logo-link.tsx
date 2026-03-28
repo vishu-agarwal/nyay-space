@@ -14,7 +14,7 @@ export function NyayLogoLink({
   return (
     <Link
       href={href}
-      className={`group inline-flex shrink-0 items-center rounded-md transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-nyay-authority ${className}`}
+      className={`group inline-flex shrink-0 cursor-pointer items-center rounded-md transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-nyay-authority ${className}`}
     >
      <Image
   src={NYAY_LOGO_SRC}
