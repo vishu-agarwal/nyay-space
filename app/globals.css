@@ -1,26 +1,99 @@
 @import "tailwindcss";
 
+/* Nyay Space: deep blue (trust), white (simplicity), gold (authority) */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Near-neutral canvas — blue lives in nav, type, and accents, not the page fill */
+  --background: #f4f5f7;
+  --foreground: #0f2847;
+  --nyay-trust: #0f2847;
+  --nyay-trust-mid: #1e4976;
+  --nyay-trust-soft: #2d5a8a;
+  --nyay-surface: #ffffff;
+  --nyay-canvas: #f4f5f7;
+  --nyay-border: rgba(15, 40, 71, 0.12);
+  --nyay-muted: #5c6d82;
+  --nyay-authority: #c9a227;
+  --nyay-authority-rich: #a67c00;
+  --nyay-authority-soft: rgba(201, 162, 39, 0.16);
+  --nyay-authority-foreground: #3d3208;
+  --nyay-elevate: 0 12px 40px -12px rgba(15, 40, 71, 0.18);
+  --nyay-card: 0 1px 3px rgba(15, 40, 71, 0.06), 0 4px 20px -4px rgba(15, 40, 71, 0.08);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-nyay-trust: var(--nyay-trust);
+  --color-nyay-trust-mid: var(--nyay-trust-mid);
+  --color-nyay-trust-soft: var(--nyay-trust-soft);
+  --color-nyay-surface: var(--nyay-surface);
+  --color-nyay-canvas: var(--nyay-canvas);
+  --color-nyay-border: var(--nyay-border);
+  --color-nyay-muted: var(--nyay-muted);
+  --color-nyay-authority: var(--nyay-authority);
+  --color-nyay-authority-rich: var(--nyay-authority-rich);
+  --color-nyay-authority-soft: var(--nyay-authority-soft);
+  --color-nyay-authority-fg: var(--nyay-authority-foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0a1628;
+    --foreground: #f4f7fb;
+    --nyay-trust: #6b9bd4;
+    --nyay-trust-mid: #4a7eb8;
+    --nyay-trust-soft: #8eb4e0;
+    --nyay-surface: #122238;
+    --nyay-canvas: #0a1628;
+    --nyay-border: rgba(244, 247, 251, 0.12);
+    --nyay-muted: #9aacbf;
+    --nyay-authority: #d4b84a;
+    --nyay-authority-rich: #e8cc6a;
+    --nyay-authority-soft: rgba(212, 184, 74, 0.15);
+    --nyay-authority-foreground: #f5edd0;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+::selection {
+  background: rgba(201, 162, 39, 0.28);
+  color: var(--nyay-trust);
+}
+
+/* Whisper of navy + gold — avoids a tinted “blue screen” */
+.nyay-dashboard-shell {
+  min-height: 100%;
+  background-color: var(--nyay-canvas);
+  background-image:
+    radial-gradient(ellipse 110% 65% at 50% -18%, rgba(15, 40, 71, 0.035), transparent 56%),
+    radial-gradient(ellipse 52% 48% at 100% 0%, rgba(201, 162, 39, 0.045), transparent 52%),
+    radial-gradient(ellipse 42% 38% at 0% 100%, rgba(15, 40, 71, 0.02), transparent 46%);
+}
+
+@media (prefers-color-scheme: dark) {
+  .nyay-dashboard-shell {
+    background-image:
+      radial-gradient(ellipse 100% 55% at 50% -10%, rgba(74, 126, 184, 0.12), transparent 50%),
+      radial-gradient(ellipse 45% 40% at 100% 0%, rgba(212, 184, 74, 0.08), transparent 48%);
+  }
+
+  ::selection {
+    background: rgba(212, 184, 74, 0.25);
+    color: var(--foreground);
+  }
+}
+
+.nyay-card-shadow {
+  box-shadow: var(--nyay-card);
+}
+
+.nyay-hero-shadow {
+  box-shadow: var(--nyay-elevate);
 }
