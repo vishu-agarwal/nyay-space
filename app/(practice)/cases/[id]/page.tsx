@@ -227,7 +227,10 @@ export default async function CaseDetailPage({ params }: PageProps) {
                         aria-hidden
                       />
                     </div>
-                    <article className="min-w-0 flex-1 rounded-xl border border-nyay-border bg-nyay-surface p-4 nyay-card-shadow transition-shadow hover:shadow-lg hover:shadow-nyay-trust/8 sm:p-5">
+                    <article
+                      id={`timeline-${ev.id}`}
+                      className="min-w-0 flex-1 scroll-mt-24 rounded-xl border border-nyay-border bg-nyay-surface p-4 nyay-card-shadow transition-shadow hover:shadow-lg hover:shadow-nyay-trust/8 sm:p-5"
+                    >
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="rounded-md bg-nyay-authority-soft px-2 py-0.5 text-xs font-semibold text-nyay-authority-fg dark:text-nyay-authority">
                           {kindLabel[ev.kind]}

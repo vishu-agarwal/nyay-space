@@ -117,7 +117,7 @@ const detailById: Record<string, CaseDetailExtra> = {
     opposingParty: "Metro Developers Pvt Ltd",
     opposingCounsel: "Adv. R. Khanna",
     filedOn: "Jan 12, 2025",
-    nextHearing: "Apr 2, 2025 · 11:00 AM",
+    nextHearing: "Apr 2, 2026 · 11:00 AM",
     synopsis:
       "Breach of long-term supply contract; interim relief declined; pleadings and discovery underway.",
     timeline: [
@@ -164,6 +164,14 @@ const detailById: Record<string, CaseDetailExtra> = {
         title: "Internal note — client call",
         detail: "Discussed settlement band and evidence gaps for affidavit of documents.",
         kind: "note",
+      },
+      {
+        id: "t7",
+        date: "2026-04-10",
+        time: "2:00 PM",
+        title: "Court-linked mediation — second session",
+        detail: "Parties to revisit settlement band after written statements.",
+        kind: "mediation",
       },
     ],
     documents: [

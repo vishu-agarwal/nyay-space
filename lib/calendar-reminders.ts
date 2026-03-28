@@ -1,4 +1,5 @@
 import { getCaseDetailForId, matters, type Matter } from "./cases";
+import { routes } from "./routes";
 
 export type HearingReminder = {
   id: string;
@@ -8,6 +9,8 @@ export type HearingReminder = {
   caseId: string;
   court: string;
   source: "next" | "timeline";
+  /** Present when `source === "timeline"` — used for deep links to the matter timeline. */
+  timelineEventId?: string;
 };
 
 export type DeadlineReminder = {
@@ -122,6 +125,7 @@ export function getHearingReminders(): HearingReminder[] {
         caseId: m.id,
         court: m.court,
         source: "timeline",
+        timelineEventId: ev.id,
       });
     }
   }
@@ -164,6 +168,170 @@ export const filingDeadlines: DeadlineReminder[] = [
     priority: "normal",
   },
 ];
+
+/** Chamber / client meetings and internal diary blocks (demo seed; replace with DB later). */
+export type AdvocateMeeting = {
+  id: string;
+  date: string;
+  time?: string;
+  title: string;
+  caseId: string;
+  /** e.g. chamber, video, court premises */
+  venue?: string;
+};
+
+export const advocateMeetings: AdvocateMeeting[] = [
+  {
+    id: "mt-1",
+    date: "2026-03-28",
+    time: "4:30 PM",
+    title: "Client conference — evidence strategy",
+    caseId: "CV-2024-118",
+    venue: "Chamber / video",
+  },
+  {
+    id: "mt-2",
+    date: "2026-03-30",
+    time: "11:00 AM",
+    title: "Witness prep with instructing counsel",
+    caseId: "CR-2024-881",
+    venue: "Chamber",
+  },
+  {
+    id: "mt-3",
+    date: "2026-04-03",
+    time: "3:00 PM",
+    title: "Settlement corridor discussion",
+    caseId: "CV-2025-02",
+    venue: "Office",
+  },
+];
+
+export type CalendarWorkKind = "hearing" | "deadline" | "mediation" | "meeting";
+
+export type CalendarWorkItem = {
+  id: string;
+  kind: CalendarWorkKind;
+  date: string;
+  time?: string;
+  title: string;
+  caseId: string;
+  court?: string;
+  priority?: "high" | "normal";
+  timelineEventId?: string;
+  venue?: string;
+};
+
+function getMediationWorkItems(): CalendarWorkItem[] {
+  const out: CalendarWorkItem[] = [];
+  for (const m of matters) {
+    if (m.status !== "active") continue;
+    const bundle = getCaseDetailForId(m.id);
+    if (!bundle) continue;
+    for (const ev of bundle.extra.timeline) {
+      if (ev.kind !== "mediation") continue;
+      out.push({
+        id: `med-${m.id}-${ev.id}`,
+        kind: "mediation",
+        date: ev.date,
+        time: ev.time,
+        title: ev.title,
+        caseId: m.id,
+        court: m.court,
+        timelineEventId: ev.id,
+      });
+    }
+  }
+  return out;
+}
+
+/** Hearings, filing deadlines, mediations, and meetings in one list for the diary. */
+export function getCalendarWorkItems(): CalendarWorkItem[] {
+  const items: CalendarWorkItem[] = [];
+  for (const h of getHearingReminders()) {
+    items.push({
+      id: h.id,
+      kind: "hearing",
+      date: h.date,
+      time: h.time,
+      title: h.title,
+      caseId: h.caseId,
+      court: h.court,
+      timelineEventId: h.timelineEventId,
+    });
+  }
+  for (const d of filingDeadlines) {
+    items.push({
+      id: d.id,
+      kind: "deadline",
+      date: d.date,
+      title: d.title,
+      caseId: d.caseId,
+      priority: d.priority,
+    });
+  }
+  for (const med of getMediationWorkItems()) {
+    items.push(med);
+  }
+  for (const mt of advocateMeetings) {
+    items.push({
+      id: mt.id,
+      kind: "meeting",
+      date: mt.date,
+      time: mt.time,
+      title: mt.title,
+      caseId: mt.caseId,
+      venue: mt.venue,
+    });
+  }
+  items.sort((a, b) => {
+    const c = a.date.localeCompare(b.date);
+    if (c !== 0) return c;
+    return (a.time ?? "").localeCompare(b.time ?? "");
+  });
+  return items;
+}
+
+export function calendarWorkByDate(items: CalendarWorkItem[]): Map<string, CalendarWorkItem[]> {
+  const map = new Map<string, CalendarWorkItem[]>();
+  for (const it of items) {
+    const list = map.get(it.date);
+    if (list) list.push(it);
+    else map.set(it.date, [it]);
+  }
+  for (const list of map.values()) {
+    list.sort((a, b) => (a.time ?? "").localeCompare(b.time ?? ""));
+  }
+  return map;
+}
+
+/** Local diary entries use ids prefixed with `ce-`; optional case link when case ID looks like a matter ref. */
+export function workItemHref(item: CalendarWorkItem): string {
+  if (item.id.startsWith("ce-")) {
+    const cid = item.caseId?.trim();
+    if (cid && cid !== "—" && /^[A-Z0-9][A-Z0-9-]*$/i.test(cid)) {
+      return routes.case(cid);
+    }
+    return routes.cases;
+  }
+  const base = routes.case(item.caseId);
+  if (item.timelineEventId) return `${base}#timeline-${item.timelineEventId}`;
+  return base;
+}
+
+/** Human-readable offset from `todayKey` (YYYY-MM-DD). */
+export function relativeDayLabel(iso: string, todayKey: string): string {
+  if (iso === todayKey) return "Today";
+  const a = new Date(iso + "T12:00:00").getTime();
+  const b = new Date(todayKey + "T12:00:00").getTime();
+  if (Number.isNaN(a) || Number.isNaN(b)) return "";
+  const diffDays = Math.round((a - b) / (24 * 60 * 60 * 1000));
+  if (diffDays === 1) return "Tomorrow";
+  if (diffDays === -1) return "Yesterday";
+  if (diffDays > 1) return `In ${diffDays} days`;
+  if (diffDays < -1) return `${-diffDays} days ago`;
+  return "";
+}
 
 export function remindersByDate(
   hearings: HearingReminder[],
