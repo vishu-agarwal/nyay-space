@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams, notFound, useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
+import { EntityPracticeNotes } from "@/components/notes/entity-practice-notes";
 import { ClientFormModal } from "@/components/clients/client-form-modal";
 import { ClientContactActions } from "@/components/contact/client-contact-actions";
 import { SupportWhatsAppDraftModal } from "@/components/contact/support-whatsapp-draft-modal";
@@ -206,6 +207,10 @@ export default function ClientDetailPage() {
             ) : null}
           </div>
         </header>
+
+        <div className="mt-10">
+          <EntityPracticeNotes entity="client" entityId={clientId} />
+        </div>
 
         <section aria-labelledby="matters-heading" className="mt-10">
           <h2

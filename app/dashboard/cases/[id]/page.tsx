@@ -6,6 +6,7 @@ import {
   type TimelineEvent,
   type CaseDocument,
 } from "@/lib/cases";
+import { EntityPracticeNotes } from "@/components/notes/entity-practice-notes";
 import { CaseClientBlock } from "./case-client-block";
 
 type PageProps = { params: Promise<{ id: string }> };
@@ -243,6 +244,10 @@ export default async function CaseDetailPage({ params }: PageProps) {
                 ))}
               </ol>
             )}
+
+            <div className="mt-10">
+              <EntityPracticeNotes entity="case" entityId={matter.id} />
+            </div>
           </main>
 
           {/* Documents — side */}
@@ -273,7 +278,7 @@ export default async function CaseDetailPage({ params }: PageProps) {
               ) : (
                 <ul className="divide-y divide-nyay-border/80">
                   {extra.documents.map((doc) => (
-                    <li key={doc.id}>
+                    <li key={doc.id} id={`document-${doc.id}`} className="scroll-mt-24">
                       <button
                         type="button"
                         className="flex w-full items-start gap-3 rounded-lg px-3 py-3.5 text-left transition-colors hover:bg-nyay-canvas/80 dark:hover:bg-nyay-trust/10"

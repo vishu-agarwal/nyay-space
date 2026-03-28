@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { GlobalSearch } from "@/components/dashboard/global-search";
 import { NyayLogoLink } from "@/components/nyay-logo-link";
 
 const nav = [
@@ -45,9 +46,14 @@ export function DashboardHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-nyay-border/90 bg-nyay-surface/90 shadow-[0_1px_0_rgba(201,162,39,0.12)] backdrop-blur-md dark:bg-[color-mix(in_srgb,var(--nyay-surface)_92%,transparent)] dark:shadow-[0_1px_0_rgba(212,184,74,0.1)]">
-   <div className="mx-auto flex h-18 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <NyayLogoLink />
+   <div className="mx-auto flex h-18 max-w-6xl min-w-0 items-center gap-2 px-4 sm:px-6 sm:gap-3 lg:px-8">
+        <NyayLogoLink className="shrink-0" />
 
+        <div className="flex min-w-0 flex-1 justify-end md:justify-start">
+          <GlobalSearch />
+        </div>
+
+        <div className="flex shrink-0 items-center gap-1 sm:gap-2">
         <button
           type="button"
           className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-nyay-border text-nyay-trust transition hover:bg-nyay-canvas focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-nyay-authority md:hidden dark:border-white/15 dark:text-foreground dark:hover:bg-white/5"
@@ -87,7 +93,7 @@ export function DashboardHeader() {
         </button>
 
         <nav
-          className="hidden w-full flex-wrap gap-1 md:flex md:w-auto"
+          className="hidden flex-wrap gap-1 md:flex"
           aria-label="Dashboard"
         >
           {nav.map(({ href, label, match }) => {
@@ -104,6 +110,7 @@ export function DashboardHeader() {
             );
           })}
         </nav>
+        </div>
       </div>
 
       <div

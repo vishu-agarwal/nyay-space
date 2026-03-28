@@ -1,6 +1,42 @@
 import Link from "next/link";
+import {
+  deadlinesInNextDays,
+  filingDeadlines,
+  formatISODateShort,
+  getHearingReminders,
+  localISODate,
+} from "@/lib/calendar-reminders";
 
 type QuickStatIconKind = "cases" | "hearings" | "deadlines" | "onTrack";
+
+/** Workflow emphasis for dashboard rows (distinct from case lifecycle in lib/cases). */
+type MatterStatusIndicator = "active" | "pending" | "urgent";
+
+function MatterStatusBadge({ kind }: { kind: MatterStatusIndicator }) {
+  const styles: Record<MatterStatusIndicator, string> = {
+    active:
+      "bg-emerald-500/12 text-emerald-900 ring-1 ring-emerald-600/20 dark:bg-emerald-400/10 dark:text-emerald-200 dark:ring-emerald-400/25",
+    pending:
+      "bg-nyay-canvas text-nyay-trust-mid ring-1 ring-nyay-border dark:bg-white/[0.06] dark:text-nyay-muted dark:ring-white/10",
+    urgent:
+      "bg-red-500/12 text-red-900 ring-1 ring-red-600/25 dark:bg-red-400/12 dark:text-red-200 dark:ring-red-400/30",
+  };
+  const label: Record<MatterStatusIndicator, string> = {
+    active: "Active",
+    pending: "Pending",
+    urgent: "Urgent",
+  };
+  return (
+    <span
+      className={[
+        "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide",
+        styles[kind],
+      ].join(" ")}
+    >
+      {label[kind]}
+    </span>
+  );
+}
 
 const quickStats: {
   label: string;
@@ -73,41 +109,23 @@ function QuickStatGlyph({ kind }: { kind: QuickStatIconKind }) {
   );
 }
 
-const todaysHearings = [
-  {
-    time: "10:30 AM",
-    case: "Sharma vs. Metro Developers",
-    court: "District Court, Saket",
-    room: "Court 4",
-  },
-  {
-    time: "11:45 AM",
-    case: "Patel Estate — partition suit",
-    court: "High Court",
-    room: "Bench II",
-  },
-  {
-    time: "2:15 PM",
-    case: "R. Kumar (bail application)",
-    court: "Sessions Court",
-    room: "Court 1",
-  },
-];
-
-const upcomingDeadlines = [
-  { date: "Mar 29", title: "Written statement", caseRef: "CV-2024-118" },
-  { date: "Mar 31", title: "Evidence affidavit", caseRef: "ARB-2023-44" },
-  { date: "Apr 2", title: "Reply to counter-claim", caseRef: "CV-2025-02" },
-  { date: "Apr 5", title: "Mediation appearance", caseRef: "MED-2024-09" },
-];
-
-const activeCases = [
+const activeCases: {
+  id: string;
+  title: string;
+  client: string;
+  stage: string;
+  next: string;
+  status: MatterStatusIndicator;
+  nextFocus: string;
+}[] = [
   {
     id: "CV-2025-02",
     title: "Contract dispute — supply agreement",
     client: "Northwind Traders",
     stage: "Written statements",
     next: "Apr 2",
+    status: "pending",
+    nextFocus: "Next step: Upload document",
   },
   {
     id: "CR-2024-881",
@@ -115,6 +133,8 @@ const activeCases = [
     client: "A. Khan",
     stage: "Hearing cycle",
     next: "Mar 28",
+    status: "urgent",
+    nextFocus: "Next hearing tomorrow",
   },
   {
     id: "ARB-2023-44",
@@ -122,6 +142,8 @@ const activeCases = [
     client: "BuildWell LLP",
     stage: "Evidence",
     next: "Mar 31",
+    status: "active",
+    nextFocus: "Expert report due in 5 days",
   },
   {
     id: "CV-2024-118",
@@ -129,10 +151,58 @@ const activeCases = [
     client: "S. Reddy",
     stage: "Pleadings",
     next: "Mar 29",
+    status: "active",
+    nextFocus: "Awaiting court notice",
   },
 ];
 
 export default function DashboardPage() {
+  const todayKey = localISODate(new Date());
+  const hearings = getHearingReminders();
+  const hearingsToday = hearings.filter((h) => h.date === todayKey);
+  const hearingsTodaySorted = [...hearingsToday].sort((a, b) =>
+    (a.time ?? "").localeCompare(b.time ?? ""),
+  );
+  const upcomingHearings = hearings.filter((h) => h.date >= todayKey).slice(0, 6);
+  const deadlinesWeek = deadlinesInNextDays(filingDeadlines, todayKey, 7);
+  const highPriorityWeek = deadlinesWeek.filter((d) => d.priority === "high").length;
+  const upcomingDeadlines = filingDeadlines
+    .filter((d) => d.date >= todayKey)
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .slice(0, 6);
+
+  const nextToday = hearingsTodaySorted[0];
+  const hearingHint = nextToday
+    ? nextToday.time
+      ? `Next at ${nextToday.time}`
+      : `Today · ${nextToday.title.replace(/^Hearing — /, "")}`
+    : "No hearings scheduled today";
+
+  const deadlineHint =
+    highPriorityWeek > 0
+      ? `${highPriorityWeek} high priority`
+      : deadlinesWeek.length > 0
+        ? "No high-priority items"
+        : "No deadlines in the next week";
+
+  const statsWithReminders = quickStats.map((s, i) => {
+    if (i === 1) {
+      return {
+        ...s,
+        value: String(hearingsToday.length),
+        hint: hearingHint,
+      };
+    }
+    if (i === 2) {
+      return {
+        ...s,
+        value: String(deadlinesWeek.length),
+        hint: deadlineHint,
+      };
+    }
+    return s;
+  });
+
   return (
     <div className="min-h-full font-sans text-foreground">
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
@@ -160,7 +230,7 @@ export default function DashboardPage() {
             Quick stats
           </h2>
           <ul className="grid gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
-            {quickStats.map((s) => {
+            {statsWithReminders.map((s) => {
               const iconWell =
                 s.iconTone === "trust"
                   ? "bg-nyay-trust/[0.08] text-nyay-trust-mid dark:bg-white/[0.06] dark:text-nyay-trust-soft"
@@ -209,27 +279,51 @@ export default function DashboardPage() {
                 className="h-1 w-6 rounded-full bg-nyay-authority"
                 aria-hidden
               />
-              Today&apos;s hearings
+              Upcoming hearings
             </h2>
+            <p className="mb-3 text-sm text-nyay-muted">
+              <Link
+                href="/dashboard/calendar"
+                className="font-medium text-nyay-authority-rich underline-offset-2 hover:underline dark:text-nyay-authority"
+              >
+                Open full calendar
+              </Link>
+            </p>
             <ul className="space-y-3">
-              {todaysHearings.map((h) => (
-                <li
-                  key={`${h.time}-${h.case}`}
-                  className="rounded-xl border border-nyay-border border-l-4 border-l-nyay-authority bg-nyay-surface p-4 pl-3 nyay-card-shadow"
-                >
-                  <p className="text-sm font-semibold text-nyay-authority-rich dark:text-nyay-authority">
-                    {h.time}
-                  </p>
-                  <p className="mt-1 font-medium text-nyay-trust dark:text-foreground">
-                    {h.case}
-                  </p>
-                  <p className="mt-1 text-sm text-nyay-muted">
-                    {h.court}
-                    <span className="text-nyay-muted/50"> · </span>
-                    {h.room}
-                  </p>
+              {upcomingHearings.length === 0 ? (
+                <li className="rounded-xl border border-nyay-border bg-nyay-surface p-4 text-sm text-nyay-muted nyay-card-shadow">
+                  No upcoming hearings in the loaded matters.
                 </li>
-              ))}
+              ) : (
+                upcomingHearings.map((h) => (
+                  <li
+                    key={h.id}
+                    className="rounded-xl border border-nyay-border border-l-4 border-l-nyay-authority bg-nyay-surface p-4 pl-3 nyay-card-shadow"
+                  >
+                    <div className="flex flex-wrap items-baseline justify-between gap-2">
+                      <p className="text-sm font-semibold text-nyay-authority-rich dark:text-nyay-authority">
+                        <time dateTime={h.date}>{formatISODateShort(h.date)}</time>
+                        {h.time ? (
+                          <span className="font-medium text-nyay-muted">
+                            {" "}
+                            · {h.time}
+                          </span>
+                        ) : null}
+                      </p>
+                      <Link
+                        href={`/dashboard/cases/${encodeURIComponent(h.caseId)}`}
+                        className="font-mono text-xs text-nyay-authority-rich hover:underline dark:text-nyay-authority"
+                      >
+                        {h.caseId}
+                      </Link>
+                    </div>
+                    <p className="mt-1 font-medium text-nyay-trust dark:text-foreground">
+                      {h.title}
+                    </p>
+                    <p className="mt-1 text-sm text-nyay-muted">{h.court}</p>
+                  </li>
+                ))
+              )}
             </ul>
           </section>
 
@@ -245,25 +339,41 @@ export default function DashboardPage() {
               Upcoming deadlines
             </h2>
             <ul className="space-y-3">
-              {upcomingDeadlines.map((d) => (
-                <li
-                  key={`${d.date}-${d.caseRef}`}
-                  className="flex items-start justify-between gap-3 rounded-xl border border-nyay-border bg-nyay-surface p-4 nyay-card-shadow"
-                >
-                  <div>
-                    <p className="font-medium text-nyay-trust dark:text-foreground">
-                      {d.title}
-                    </p>
-                    <p className="mt-1 text-sm text-nyay-muted">{d.caseRef}</p>
-                  </div>
-                  <time
-                    className="shrink-0 rounded-lg bg-nyay-authority-soft px-2.5 py-1 text-sm font-semibold tabular-nums text-nyay-authority-fg dark:text-nyay-authority"
-                    dateTime={d.date}
-                  >
-                    {d.date}
-                  </time>
+              {upcomingDeadlines.length === 0 ? (
+                <li className="rounded-xl border border-nyay-border bg-nyay-surface p-4 text-sm text-nyay-muted nyay-card-shadow">
+                  No upcoming deadlines in the loaded data.
                 </li>
-              ))}
+              ) : (
+                upcomingDeadlines.map((d) => (
+                  <li
+                    key={d.id}
+                    className="flex items-start justify-between gap-3 rounded-xl border border-nyay-border bg-nyay-surface p-4 nyay-card-shadow"
+                  >
+                    <div className="min-w-0">
+                      <p className="font-medium text-nyay-trust dark:text-foreground">
+                        {d.title}
+                      </p>
+                      <Link
+                        href={`/dashboard/cases/${encodeURIComponent(d.caseId)}`}
+                        className="mt-1 inline-block font-mono text-xs text-nyay-authority-rich hover:underline dark:text-nyay-authority"
+                      >
+                        {d.caseId}
+                      </Link>
+                      {d.priority === "high" ? (
+                        <p className="mt-2 text-xs font-medium text-nyay-authority-rich dark:text-nyay-authority">
+                          High priority
+                        </p>
+                      ) : null}
+                    </div>
+                    <time
+                      className="shrink-0 rounded-lg bg-nyay-authority-soft px-2.5 py-1 text-sm font-semibold tabular-nums text-nyay-authority-fg dark:text-nyay-authority"
+                      dateTime={d.date}
+                    >
+                      {formatISODateShort(d.date)}
+                    </time>
+                  </li>
+                ))
+              )}
             </ul>
           </section>
         </div>
@@ -281,11 +391,14 @@ export default function DashboardPage() {
           </h2>
           <div className="overflow-hidden rounded-xl border border-nyay-border bg-nyay-surface nyay-card-shadow">
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[640px] text-left text-sm">
+              <table className="w-full min-w-[720px] text-left text-sm">
                 <thead>
                   <tr className="border-b border-nyay-border bg-nyay-canvas dark:bg-nyay-trust/10">
                     <th className="px-4 py-3 font-semibold text-nyay-trust dark:text-foreground">
                       Matter
+                    </th>
+                    <th className="px-4 py-3 font-semibold text-nyay-trust dark:text-foreground">
+                      Status
                     </th>
                     <th className="px-4 py-3 font-semibold text-nyay-trust dark:text-foreground">
                       Client
@@ -316,7 +429,13 @@ export default function DashboardPage() {
                           <span className="font-medium text-nyay-trust group-hover:text-nyay-trust-mid dark:text-foreground dark:group-hover:text-foreground">
                             {c.title}
                           </span>
+                          <span className="mt-1 block text-xs font-normal text-nyay-muted">
+                            {c.nextFocus}
+                          </span>
                         </Link>
+                      </td>
+                      <td className="px-4 py-3 align-top">
+                        <MatterStatusBadge kind={c.status} />
                       </td>
                       <td className="px-4 py-3 text-nyay-muted">{c.client}</td>
                       <td className="px-4 py-3 text-nyay-muted">{c.stage}</td>

@@ -1,5 +1,7 @@
 export const NYAY_CLIENTS_EXTRA_KEY = "nyay-clients-extra";
 export const NYAY_MATTER_OVERRIDES_KEY = "nyay-matter-client";
+export const NYAY_CASE_NOTES_KEY = "nyay-case-notes";
+export const NYAY_CLIENT_NOTES_KEY = "nyay-client-notes";
 
 const EVENT = "nyay-local-storage";
 

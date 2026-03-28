@@ -40,6 +40,34 @@ export function localISODate(d: Date): string {
   return `${y}-${mo}-${day}`;
 }
 
+function addDaysToIsoDate(iso: string, delta: number): string {
+  const d = new Date(iso + "T12:00:00");
+  if (Number.isNaN(d.getTime())) return iso;
+  d.setDate(d.getDate() + delta);
+  return localISODate(d);
+}
+
+/** Inclusive window: `todayKey` through `todayKey + (days - 1)` calendar days. */
+export function deadlinesInNextDays(
+  deadlines: DeadlineReminder[],
+  todayKey: string,
+  days: number,
+): DeadlineReminder[] {
+  if (days < 1) return [];
+  const endKey = addDaysToIsoDate(todayKey, days - 1);
+  return deadlines.filter((d) => d.date >= todayKey && d.date <= endKey);
+}
+
+export function formatISODateShort(iso: string): string {
+  const d = new Date(iso + "T12:00:00");
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
 /** Parses leading segment like "Mar 28, 2026 · 10:00 AM" */
 export function parseCourtScheduleLine(line: string): {
   date: string;
