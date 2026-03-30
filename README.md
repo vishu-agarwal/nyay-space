@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Nyay Space
 
-## Getting Started
+**Nyay Space** is a Next.js app for legal practice management: a structured workspace where advocates can review matters at a glance, browse **clients** and **cases**, and use a **calendar** for hearings and deadlines. The UI is built for clarity and day-to-day workflow—not scattered notes and files.
 
-First, run the development server:
+The product positioning aligns with **NyayHub** (see site metadata in `app/layout.tsx`): case timelines, documents, client touchpoints, and consultation scheduling, presented as a single digital hub.
+
+## Features
+
+- **Dashboard** (`/`) — practice overview, quick stats, and matter highlights
+- **Cases** (`/cases`, `/cases/[id]`) — case lists and detail views with related client context
+- **Clients** (`/clients`, `/clients/[id]`) — client directory and profiles
+- **Calendar** (`/calendar`) — advocate calendar for dates and reminders
+- **Auth** (`/login`, `/register`, `/forgot-password`) — sign-in, registration, and recovery flows via React Server Actions
+- **Global shell** — practice header, quick-add FAB, footer, loading and error boundaries
+
+## Tech stack
+
+| Area        | Choice                          |
+| ----------- | ------------------------------- |
+| Framework   | [Next.js](https://nextjs.org) 16 (App Router) |
+| UI          | [React](https://react.dev) 19   |
+| Styling     | [Tailwind CSS](https://tailwindcss.com) 4 |
+| Language    | TypeScript                      |
+| Toasts      | [Sonner](https://sonner.emilkowal.ski/) |
+
+## Requirements
+
+- **Node.js** 20+ (matches `@types/node` in the repo)
+- **npm**, **pnpm**, **yarn**, or **bun** for installs and scripts
+
+## Getting started
+
+Clone the repository, install dependencies, and start the dev server:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Command        | Description              |
+| -------------- | ------------------------ |
+| `npm run dev`  | Development server       |
+| `npm run build`| Production build         |
+| `npm run start`| Run production server    |
+| `npm run lint` | ESLint (Next.js config)  |
 
-## Learn More
+### Optional: logo asset script
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run logo:transparent
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Runs `scripts/knockout-logo-white.mjs` (uses Sharp) for logo processing when you need a transparent variant.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project layout (high level)
 
-## Deploy on Vercel
+```
+app/
+  (auth)/          # Login, register, forgot password + server actions
+  (practice)/      # Dashboard, cases, clients, calendar
+  layout.tsx       # Root layout, fonts, metadata
+  globals.css      # Design tokens and global styles
+components/        # Shared UI (auth, practice, notes, icons, …)
+lib/               # Routes, validation, calendar helpers, OTP cookies, …
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Main practice routes are defined in `lib/routes.ts` (`/`, `/calendar`, `/cases`, `/clients`, and dynamic segments for detail pages).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Authentication (current behavior)
+
+Server actions in `app/(auth)/actions.ts` validate input and orchestrate OTP-style flows using HTTP-only cookies (`lib/server-otp-cookie.ts`). **There is no production identity provider wired in yet**—sign-in redirects to `/` after validation, and in **development** OTP codes are logged to the server console for testing.
+
+Replace these stubs with your real auth backend (session/JWT, email/SMS provider, etc.) before shipping.
+
+## Deployment
+
+Build with `npm run build` and run `npm run start`, or deploy to any host that supports Node (e.g. [Vercel](https://vercel.com/docs/frameworks/nextjs)). See the [Next.js deployment docs](https://nextjs.org/docs/app/building-your-application/deploying) for details.
+
+## License
+
+Private project (`"private": true` in `package.json`). Adjust this section if you open-source the repo.

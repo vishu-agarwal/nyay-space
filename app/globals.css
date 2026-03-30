@@ -1,26 +1,200 @@
 @import "tailwindcss";
 
+/* Nyay Space: deep blue (trust), white (simplicity), gold (authority) */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Near-neutral canvas — blue lives in nav, type, and accents, not the page fill */
+  --background: #f4f5f7;
+  --foreground: #0f2847;
+  --nyay-trust: #0f2847;
+  --nyay-trust-mid: #1e4976;
+  --nyay-trust-soft: #2d5a8a;
+  --nyay-surface: #ffffff;
+  --nyay-canvas: #f4f5f7;
+  --nyay-border: rgba(15, 40, 71, 0.12);
+  --nyay-muted: #5c6d82;
+  --nyay-authority: #c9a227;
+  --nyay-authority-rich: #a67c00;
+  --nyay-authority-soft: rgba(201, 162, 39, 0.16);
+  --nyay-authority-foreground: #3d3208;
+  --nyay-elevate: 0 12px 40px -12px rgba(15, 40, 71, 0.18);
+  --nyay-card: 0 1px 3px rgba(15, 40, 71, 0.06), 0 4px 20px -4px rgba(15, 40, 71, 0.08);
+  --nyay-loader-shadow-soft: rgba(15, 40, 71, 0.1);
+  --nyay-loader-shadow-mid: rgba(15, 40, 71, 0.14);
+  --nyay-loader-glow: rgba(201, 162, 39, 0.42);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-nyay-trust: var(--nyay-trust);
+  --color-nyay-trust-mid: var(--nyay-trust-mid);
+  --color-nyay-trust-soft: var(--nyay-trust-soft);
+  --color-nyay-surface: var(--nyay-surface);
+  --color-nyay-canvas: var(--nyay-canvas);
+  --color-nyay-border: var(--nyay-border);
+  --color-nyay-muted: var(--nyay-muted);
+  --color-nyay-authority: var(--nyay-authority);
+  --color-nyay-authority-rich: var(--nyay-authority-rich);
+  --color-nyay-authority-soft: var(--nyay-authority-soft);
+  --color-nyay-authority-fg: var(--nyay-authority-foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0a1628;
+    --foreground: #f4f7fb;
+    --nyay-trust: #6b9bd4;
+    --nyay-trust-mid: #4a7eb8;
+    --nyay-trust-soft: #8eb4e0;
+    --nyay-surface: #122238;
+    --nyay-canvas: #0a1628;
+    --nyay-border: rgba(244, 247, 251, 0.12);
+    --nyay-muted: #9aacbf;
+    --nyay-authority: #d4b84a;
+    --nyay-authority-rich: #e8cc6a;
+    --nyay-authority-soft: rgba(212, 184, 74, 0.15);
+    --nyay-authority-foreground: #f5edd0;
+    --nyay-loader-shadow-soft: rgba(0, 0, 0, 0.35);
+    --nyay-loader-shadow-mid: rgba(0, 0, 0, 0.45);
+    --nyay-loader-glow: rgba(212, 184, 74, 0.38);
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* Native <dialog>: Tailwind preflight zeros margin and breaks UA centering; backdrop needs explicit styling. */
+dialog.nyay-app-modal::backdrop {
+  background: rgb(15 40 71 / 0.45);
+}
+
+@media (prefers-color-scheme: dark) {
+  dialog.nyay-app-modal::backdrop {
+    background: rgb(0 0 0 / 0.55);
+  }
+}
+
+::selection {
+  background: rgba(201, 162, 39, 0.28);
+  color: var(--nyay-trust);
+}
+
+/* Whisper of navy + gold — avoids a tinted “blue screen” */
+/* Horizontal inset aligned with practice header/footer (tighter than Tailwind’s px-4/sm:px-6/lg:px-8). */
+.nyay-page-x {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .nyay-page-x {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .nyay-page-x {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+}
+
+/* Default vertical padding for main practice (and similar) page shells. */
+.nyay-page-y {
+  padding-top: 1.25rem;
+  padding-bottom: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .nyay-page-y {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+}
+
+.nyay-dashboard-shell {
+  min-height: 100%;
+  background-color: var(--nyay-canvas);
+  background-image:
+    radial-gradient(ellipse 110% 65% at 50% -18%, rgba(15, 40, 71, 0.035), transparent 56%),
+    radial-gradient(ellipse 52% 48% at 100% 0%, rgba(201, 162, 39, 0.045), transparent 52%),
+    radial-gradient(ellipse 42% 38% at 0% 100%, rgba(15, 40, 71, 0.02), transparent 46%);
+}
+
+@media (prefers-color-scheme: dark) {
+  .nyay-dashboard-shell {
+    background-image:
+      radial-gradient(ellipse 100% 55% at 50% -10%, rgba(74, 126, 184, 0.12), transparent 50%),
+      radial-gradient(ellipse 45% 40% at 100% 0%, rgba(212, 184, 74, 0.08), transparent 48%);
+  }
+
+  ::selection {
+    background: rgba(212, 184, 74, 0.25);
+    color: var(--foreground);
+  }
+}
+
+.nyay-card-shadow {
+  box-shadow: var(--nyay-card);
+}
+
+.nyay-hero-shadow {
+  box-shadow: var(--nyay-elevate);
+}
+
+/* Loader: same mark as header logo — breathe + authority glow */
+@keyframes nyay-logo-loader-pulse {
+
+  0%,
+  100% {
+    transform: scale(1) translateY(0);
+    filter: drop-shadow(0 2px 10px var(--nyay-loader-shadow-soft)) drop-shadow(0 0 0 transparent);
+  }
+
+  50% {
+    transform: scale(1.06) translateY(-2px);
+    filter: drop-shadow(0 8px 24px var(--nyay-loader-shadow-mid)) drop-shadow(0 0 28px var(--nyay-loader-glow));
+  }
+}
+
+@keyframes nyay-loader-halo {
+
+  0%,
+  100% {
+    opacity: 0.42;
+    transform: scale(0.94);
+  }
+
+  50% {
+    opacity: 0.88;
+    transform: scale(1);
+  }
+}
+
+.nyay-logo-loader {
+  animation: nyay-logo-loader-pulse 1.85s ease-in-out infinite;
+}
+
+.nyay-loader-halo {
+  animation: nyay-loader-halo 1.85s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nyay-logo-loader {
+    animation: none;
+    filter: none;
+    transform: none;
+  }
+
+  .nyay-loader-halo {
+    animation: none;
+    opacity: 0.5;
+    transform: none;
+  }
 }
