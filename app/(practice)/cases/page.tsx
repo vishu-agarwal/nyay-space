@@ -5,18 +5,23 @@ import { useMemo, useState } from "react";
 import { MaskIcon } from "@/components/icons/mask-icon";
 import { mergeClients, clientDisplayName } from "@/lib/clients";
 import { effectiveClientId } from "@/lib/matter-client-overrides";
-import { matters, type CaseStatus } from "@/lib/cases";
+import type { CaseStatus, CaseType } from "@/lib/cases";
+import { useAdvocateCaseList } from "@/lib/use-case-management-store";
 import { useNyayStorage } from "@/lib/use-nyay-storage";
 import { PracticeListingKicker } from "@/components/practice/listing-kicker";
 import { routes } from "@/lib/routes";
+import { FilterOptionsMenu } from "@/components/practice/filter-options-menu";
 
 type StatusFilter = "all" | CaseStatus;
+type TypeFilter = "all" | CaseType;
 
 export default function CasesListingPage() {
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<StatusFilter>("all");
+  const [caseType, setCaseType] = useState<TypeFilter>("all");
   const [view, setView] = useState<"list" | "card">("list");
   const { extraClients, overrides } = useNyayStorage();
+  const { cases } = useAdvocateCaseList();
 
   const allClients = useMemo(
     () => mergeClients(extraClients),
@@ -25,15 +30,16 @@ export default function CasesListingPage() {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return matters.filter((m) => {
+    return cases.filter((m) => {
       if (status !== "all" && m.status !== status) return false;
+      if (caseType !== "all" && m.caseType !== caseType) return false;
       if (!q) return true;
-      const cid = effectiveClientId(m, overrides);
+      const cid = effectiveClientId({ id: m.id, clientId: m.clientId }, overrides);
       const clientName = clientDisplayName(cid, allClients);
-      const blob = `${m.id} ${m.title} ${clientName} ${m.stage} ${m.court}`.toLowerCase();
+      const blob = `${m.id} ${m.title} ${clientName} ${m.stage} ${m.court} ${m.caseType} ${m.status}`.toLowerCase();
       return blob.includes(q);
     });
-  }, [query, status, overrides, allClients]);
+  }, [query, status, caseType, overrides, allClients, cases]);
 
   return (
     <div className="min-h-full font-sans text-foreground">
@@ -67,30 +73,37 @@ export default function CasesListingPage() {
             />
           </label>
 
-          <fieldset className="flex flex-wrap items-center gap-2 border-0 p-0">
-            <legend className="sr-only">Filter by status</legend>
-            {(
+          <FilterOptionsMenu
+            title="Status"
+            tone="trust"
+            options={
               [
-                { key: "all" as const, label: "All" },
-                { key: "active" as const, label: "Active" },
-                { key: "closed" as const, label: "Closed" },
+              { key: "all", label: "All" },
+              { key: "active", label: "Active" },
+              { key: "urgent", label: "Urgent" },
+              { key: "closed", label: "Closed" },
               ] as const
-            ).map(({ key, label }) => (
-              <button
-                key={key}
-                type="button"
-                onClick={() => setStatus(key)}
-                aria-pressed={status === key}
-                className={`rounded-lg px-3.5 py-2 text-sm font-medium transition-colors ${
-                  status === key
-                    ? "bg-nyay-trust text-white shadow-sm dark:bg-nyay-trust-mid"
-                    : "bg-nyay-canvas text-nyay-trust-mid hover:bg-nyay-border/40 dark:text-foreground"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </fieldset>
+            }
+            value={status}
+            onChange={setStatus}
+            defaultValue="all"
+          />
+
+          <FilterOptionsMenu
+            title="Type"
+            tone="authority"
+            options={
+              [
+              { key: "all", label: "All types" },
+              { key: "civil", label: "Civil" },
+              { key: "criminal", label: "Criminal" },
+              { key: "family", label: "Family" },
+              ] as const
+            }
+            value={caseType}
+            onChange={setCaseType}
+            defaultValue="all"
+          />
 
           <div
             className="flex rounded-lg border border-nyay-border p-0.5"
@@ -129,9 +142,9 @@ export default function CasesListingPage() {
         </div>
 
         <p className="mb-3 text-sm text-nyay-muted" aria-live="polite">
-          {filtered.length === matters.length
-            ? `${matters.length} matters`
-            : `${filtered.length} of ${matters.length} matters`}
+          {filtered.length === cases.length
+            ? `${cases.length} cases`
+            : `${filtered.length} of ${cases.length} cases`}
         </p>
 
         {filtered.length === 0 ? (
@@ -158,6 +171,9 @@ export default function CasesListingPage() {
                     </th>
                     <th className="px-4 py-3 font-semibold text-nyay-trust dark:text-foreground">
                       Stage
+                    </th>
+                    <th className="px-4 py-3 font-semibold text-nyay-trust dark:text-foreground">
+                      Type
                     </th>
                     <th className="px-4 py-3 font-semibold text-nyay-trust dark:text-foreground">
                       Status
@@ -197,6 +213,11 @@ export default function CasesListingPage() {
                       </td>
                       <td className="max-w-[200px] px-4 py-3 text-nyay-muted">{c.court}</td>
                       <td className="px-4 py-3 text-nyay-muted">{c.stage}</td>
+                      <td className="px-4 py-3">
+                        <span className="rounded-full bg-nyay-authority/10 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-nyay-authority-fg dark:text-nyay-authority">
+                          {formatCaseTypeLabel(c.caseType)}
+                        </span>
+                      </td>
                       <td className="px-4 py-3">
                         <StatusPill status={c.status} />
                       </td>
@@ -240,6 +261,12 @@ export default function CasesListingPage() {
                     </Link>
                   </p>
                   <p className="mt-1 text-sm text-nyay-muted">{c.court}</p>
+                  <p className="mt-2 text-xs text-nyay-muted">
+                    Type:{" "}
+                    <span className="font-semibold text-nyay-trust-mid dark:text-foreground">
+                      {formatCaseTypeLabel(c.caseType)}
+                    </span>
+                  </p>
                   <dl className="mt-4 grid gap-2 border-t border-nyay-border pt-4 text-sm">
                     <div className="flex justify-between gap-2">
                       <dt className="text-nyay-muted">Stage</dt>
@@ -266,15 +293,29 @@ export default function CasesListingPage() {
 
 function StatusPill({ status }: { status: CaseStatus }) {
   const isActive = status === "active";
+  const isUrgent = status === "urgent";
   return (
     <span
       className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide ${
         isActive
           ? "bg-nyay-authority-soft text-nyay-authority-fg dark:text-nyay-authority"
-          : "bg-nyay-canvas text-nyay-muted ring-1 ring-nyay-border"
+          : isUrgent
+            ? "bg-red-500/12 text-red-900 ring-1 ring-red-600/25 dark:bg-red-400/12 dark:text-red-200 dark:ring-red-400/30"
+            : "bg-nyay-canvas text-nyay-muted ring-1 ring-nyay-border"
       }`}
     >
-      {isActive ? "Active" : "Closed"}
+      {status === "active" ? "Active" : status === "urgent" ? "Urgent" : "Closed"}
     </span>
   );
+}
+
+function formatCaseTypeLabel(t: CaseType): string {
+  switch (t) {
+    case "civil":
+      return "Civil";
+    case "criminal":
+      return "Criminal";
+    case "family":
+      return "Family";
+  }
 }

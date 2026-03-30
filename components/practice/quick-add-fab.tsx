@@ -7,6 +7,7 @@ import { AppModal } from "@/components/ui/app-modal";
 import { MaskIcon } from "@/components/icons/mask-icon";
 import { matters } from "@/lib/cases";
 import { routes } from "@/lib/routes";
+import { CreateCaseModal } from "@/components/case-management/create-case-modal";
 
 function newClientId(): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -21,6 +22,7 @@ export function PracticeQuickAddFab() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [clientModalOpen, setClientModalOpen] = useState(false);
   const [docPickerOpen, setDocPickerOpen] = useState(false);
+  const [createCaseOpen, setCreateCaseOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -62,15 +64,18 @@ export function PracticeQuickAddFab() {
               : "pointer-events-none translate-y-2 opacity-0",
           ].join(" ")}
         >
-          <Link
-            href={routes.cases}
+          <button
+            type="button"
             role="menuitem"
-            onClick={closeMenu}
+            onClick={() => {
+              closeMenu();
+              setCreateCaseOpen(true);
+            }}
             className="flex min-h-10 min-w-36 items-center gap-2 rounded-xl border border-nyay-border bg-nyay-surface px-3 py-2 text-sm font-semibold text-nyay-trust shadow-md nyay-card-shadow transition-colors hover:bg-nyay-canvas focus:outline-none focus-visible:ring-2 focus-visible:ring-nyay-authority focus-visible:ring-offset-2 focus-visible:ring-offset-nyay-canvas dark:border-white/12 dark:bg-[#122238] dark:text-foreground dark:hover:bg-white/5 dark:focus-visible:ring-offset-[#0a1628]"
           >
             <MaskIcon name="briefcase" className="h-3.5 w-3.5 shrink-0 text-nyay-authority" />
             Add case
-          </Link>
+          </button>
           <button
             type="button"
             role="menuitem"
@@ -119,6 +124,8 @@ export function PracticeQuickAddFab() {
         mode="add"
         buildNewId={newClientId}
       />
+
+      <CreateCaseModal open={createCaseOpen} onOpenChange={setCreateCaseOpen} />
 
       <AppModal
         open={docPickerOpen}

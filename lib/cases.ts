@@ -1,9 +1,12 @@
-export type CaseStatus = "active" | "closed";
+export type CaseStatus = "active" | "closed" | "urgent";
+
+export type CaseType = "civil" | "criminal" | "family";
 
 export type Matter = {
   id: string;
   title: string;
   clientId: string;
+  caseType: CaseType;
   stage: string;
   next: string | null;
   court: string;
@@ -50,6 +53,7 @@ export const matters: Matter[] = [
     id: "CV-2025-02",
     title: "Contract dispute — supply agreement",
     clientId: "cl-nw",
+    caseType: "civil",
     stage: "Written statements",
     next: "Apr 2",
     court: "District Court, Saket",
@@ -59,6 +63,7 @@ export const matters: Matter[] = [
     id: "CR-2024-881",
     title: "Bail & trial prep",
     clientId: "cl-khan",
+    caseType: "criminal",
     stage: "Hearing cycle",
     next: "Mar 28",
     court: "Sessions Court",
@@ -68,6 +73,7 @@ export const matters: Matter[] = [
     id: "ARB-2023-44",
     title: "Construction arbitration",
     clientId: "cl-bw",
+    caseType: "civil",
     stage: "Evidence",
     next: "Mar 31",
     court: "Arbitration Centre, Delhi",
@@ -77,6 +83,7 @@ export const matters: Matter[] = [
     id: "CV-2024-118",
     title: "Property injunction",
     clientId: "cl-reddy",
+    caseType: "civil",
     stage: "Pleadings",
     next: "Mar 29",
     court: "District Court, Rohini",
@@ -86,6 +93,7 @@ export const matters: Matter[] = [
     id: "CV-2023-201",
     title: "Consumer compensation — defective goods",
     clientId: "cl-metro",
+    caseType: "civil",
     stage: "Disposed",
     next: null,
     court: "District Consumer Forum",
@@ -95,6 +103,7 @@ export const matters: Matter[] = [
     id: "FAM-2022-14",
     title: "Mutual consent divorce",
     clientId: "cl-kapoor",
+    caseType: "family",
     stage: "Decree granted",
     next: null,
     court: "Family Court, Patiala House",
@@ -104,6 +113,7 @@ export const matters: Matter[] = [
     id: "LAB-2024-07",
     title: "Wrongful termination — IT sector",
     clientId: "cl-pf",
+    caseType: "civil",
     stage: "Settled",
     next: null,
     court: "Labour Court, Gurgaon",
