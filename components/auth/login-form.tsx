@@ -10,9 +10,9 @@ import {
 } from "@/app/(auth)/actions";
 import { AuthCard } from "@/components/auth/auth-card";
 import {
-  useLoginOtpSendCanSubmit,
-  useLoginOtpVerifyCanSubmit,
-  useLoginPasswordCanSubmit,
+  canSubmitLoginOtpSend,
+  canSubmitLoginOtpVerify,
+  canSubmitLoginPassword,
 } from "@/components/auth/use-auth-form-sync";
 
 const initial: AuthFormState = {};
@@ -56,10 +56,17 @@ export function LoginForm() {
     initial,
   );
 
-  const { formRef: pwFormRef, canSubmit: canPw } = useLoginPasswordCanSubmit();
-  const { formRef: sendFormRef, canSubmit: canSend } = useLoginOtpSendCanSubmit();
-  const { formRef: verifyFormRef, canSubmit: canVerify } =
-    useLoginOtpVerifyCanSubmit(Boolean(storedIdentifier.trim()));
+  const [pwIdentifier, setPwIdentifier] = useState("");
+  const [pwPassword, setPwPassword] = useState("");
+  const [otpIdentifier, setOtpIdentifier] = useState("");
+  const [verifyOtp, setVerifyOtp] = useState("");
+
+  const canPw = canSubmitLoginPassword(pwIdentifier, pwPassword);
+  const canSend = canSubmitLoginOtpSend(otpIdentifier);
+  const canVerify = canSubmitLoginOtpVerify(
+    Boolean(storedIdentifier.trim()),
+    verifyOtp,
+  );
 
   const [dismissed, setDismissed] = useState<
     Partial<Record<AuthFieldKey, boolean>>
@@ -71,14 +78,11 @@ export function LoginForm() {
   }, []);
 
   useEffect(() => {
-    if (sendState.success) {
-      const el = sendFormRef.current?.elements.namedItem(
-        "identifier",
-      ) as HTMLInputElement | null;
-      if (el) setStoredIdentifier(el.value.trim());
-      setOtpSent(true);
-      setOtpSendMessage(sendState.success);
-    }
+    if (!sendState.success) return;
+    setStoredIdentifier(otpIdentifier.trim());
+    setOtpSent(true);
+    setOtpSendMessage(sendState.success);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- otpIdentifier from the success render only
   }, [sendState.success]);
 
   useEffect(() => {
@@ -86,6 +90,10 @@ export function LoginForm() {
     setStoredIdentifier("");
     setOtpSendMessage(null);
     setDismissed({});
+    setPwIdentifier("");
+    setPwPassword("");
+    setOtpIdentifier("");
+    setVerifyOtp("");
   }, [mode]);
 
   const pwIdentifierErr =
@@ -142,7 +150,6 @@ export function LoginForm() {
 
       {mode === "password" ? (
         <form
-          ref={pwFormRef}
           action={pwAction}
           className="space-y-5"
           onSubmit={clearDismiss}
@@ -170,11 +177,15 @@ export function LoginForm() {
               type="text"
               autoComplete="username"
               inputMode="email"
+              value={pwIdentifier}
               aria-invalid={pwIdentifierErr ? true : undefined}
               aria-describedby={
                 pwIdentifierErr ? "login-identifier-error" : undefined
               }
-              onInput={() => dismissField("identifier")}
+              onChange={(e) => {
+                dismissField("identifier");
+                setPwIdentifier(e.target.value);
+              }}
               className={`${inputBase} ${pwIdentifierErr ? inputErr : inputOk}`}
               placeholder="you@example.com or +91 98765 43210"
             />
@@ -206,11 +217,15 @@ export function LoginForm() {
               name="password"
               type="password"
               autoComplete="current-password"
+              value={pwPassword}
               aria-invalid={pwPasswordErr ? true : undefined}
               aria-describedby={
                 pwPasswordErr ? "login-password-error" : undefined
               }
-              onInput={() => dismissField("password")}
+              onChange={(e) => {
+                dismissField("password");
+                setPwPassword(e.target.value);
+              }}
               className={`${inputBase} ${pwPasswordErr ? inputErr : inputOk}`}
               placeholder="••••••••"
             />
@@ -242,7 +257,6 @@ export function LoginForm() {
         <div className="space-y-6">
           <form
             id="login-send-otp"
-            ref={sendFormRef}
             action={sendAction}
             className="space-y-5"
             onSubmit={clearDismiss}
@@ -277,11 +291,15 @@ export function LoginForm() {
                 name="identifier"
                 type="text"
                 autoComplete="username"
+                value={otpIdentifier}
                 aria-invalid={sendIdentifierErr ? true : undefined}
                 aria-describedby={
                   sendIdentifierErr ? "login-otp-identifier-error" : undefined
                 }
-                onInput={() => dismissField("identifier")}
+                onChange={(e) => {
+                  dismissField("identifier");
+                  setOtpIdentifier(e.target.value);
+                }}
                 className={`${inputBase} ${sendIdentifierErr ? inputErr : inputOk}`}
                 placeholder="you@example.com or +91 98765 43210"
               />
@@ -312,7 +330,6 @@ export function LoginForm() {
 
           {otpSent ? (
             <form
-              ref={verifyFormRef}
               action={verifyAction}
               className="space-y-5 border-t border-nyay-border pt-6 dark:border-white/10"
               onSubmit={clearDismiss}
@@ -343,11 +360,15 @@ export function LoginForm() {
                   autoComplete="one-time-code"
                   maxLength={6}
                   pattern="\d{6}"
+                  value={verifyOtp}
                   aria-invalid={verifyOtpErr ? true : undefined}
                   aria-describedby={
                     verifyOtpErr ? "login-otp-error" : undefined
                   }
-                  onInput={() => dismissField("otp")}
+                  onChange={(e) => {
+                    dismissField("otp");
+                    setVerifyOtp(e.target.value);
+                  }}
                   className={`${inputBase} tracking-widest ${verifyOtpErr ? inputErr : inputOk}`}
                   placeholder="000000"
                 />

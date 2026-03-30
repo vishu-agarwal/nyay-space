@@ -5,7 +5,7 @@ import { useActionState, useCallback, useEffect, useState } from "react";
 import type { AuthFieldKey, AuthFormState } from "@/app/(auth)/actions";
 import { registerFlow } from "@/app/(auth)/actions";
 import { AuthCard } from "@/components/auth/auth-card";
-import { useRegisterFormCanSubmit } from "@/components/auth/use-auth-form-sync";
+import { registerSubmitRules } from "@/components/auth/use-auth-form-sync";
 import { saveAdvocateProfile } from "@/lib/advocate-profile";
 
 const initial: AuthFormState = {};
@@ -24,7 +24,20 @@ const linkSm =
 
 export function RegisterForm() {
   const [state, formAction, pending] = useActionState(registerFlow, initial);
-  const { formRef, canSendOtp, canCreateAccount } = useRegisterFormCanSubmit();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [otp, setOtp] = useState("");
+  const { canSendOtp, canCreateAccount } = registerSubmitRules({
+    name,
+    email,
+    whatsapp,
+    password,
+    confirm,
+    otp,
+  });
   const [otpSent, setOtpSent] = useState(false);
   const [codeHint, setCodeHint] = useState<string | null>(null);
 
@@ -61,7 +74,6 @@ export function RegisterForm() {
       description="Email and mobile for verification; then choose a secure password."
     >
       <form
-        ref={formRef}
         action={formAction}
         className="space-y-5"
         noValidate
@@ -70,11 +82,9 @@ export function RegisterForm() {
           const fd = new FormData(e.currentTarget);
           const intent = String(fd.get("intent") ?? "");
           if (intent === "send" || intent === "resend" || intent === "create") {
-            const name = String(fd.get("name") ?? "").trim();
-            const whatsapp = String(fd.get("whatsapp") ?? "").trim();
             saveAdvocateProfile({
-              name: name || "",
-              whatsapp,
+              name: name.trim() || "",
+              whatsapp: whatsapp.trim(),
             });
           }
         }}
@@ -109,9 +119,13 @@ export function RegisterForm() {
             name="name"
             type="text"
             autoComplete="name"
+            value={name}
             aria-invalid={nameErr ? true : undefined}
             aria-describedby={nameErr ? "register-name-error" : undefined}
-            onInput={() => dismissField("name")}
+            onChange={(e) => {
+              dismissField("name");
+              setName(e.target.value);
+            }}
             className={`${inputBase} ${nameErr ? inputErr : inputOk}`}
             placeholder="Advocate name"
           />
@@ -138,13 +152,17 @@ export function RegisterForm() {
             name="whatsapp"
             type="tel"
             autoComplete="tel"
+            value={whatsapp}
             aria-invalid={whatsappErr ? true : undefined}
             aria-describedby={
               whatsappErr
                 ? "register-whatsapp-hint register-whatsapp-error"
                 : "register-whatsapp-hint"
             }
-            onInput={() => dismissField("whatsapp")}
+            onChange={(e) => {
+              dismissField("whatsapp");
+              setWhatsapp(e.target.value);
+            }}
             className={`${inputBase} ${whatsappErr ? inputErr : inputOk}`}
             placeholder="+91 98765 43210"
           />
@@ -177,9 +195,13 @@ export function RegisterForm() {
             name="email"
             type="email"
             autoComplete="email"
+            value={email}
             aria-invalid={emailErr ? true : undefined}
             aria-describedby={emailErr ? "register-email-error" : undefined}
-            onInput={() => dismissField("email")}
+            onChange={(e) => {
+              dismissField("email");
+              setEmail(e.target.value);
+            }}
             className={`${inputBase} ${emailErr ? inputErr : inputOk}`}
             placeholder="you@example.com"
           />
@@ -206,11 +228,15 @@ export function RegisterForm() {
             name="password"
             type="password"
             autoComplete="new-password"
+            value={password}
             aria-invalid={passwordErr ? true : undefined}
             aria-describedby={
               passwordErr ? "register-password-error" : undefined
             }
-            onInput={() => dismissField("password")}
+            onChange={(e) => {
+              dismissField("password");
+              setPassword(e.target.value);
+            }}
             className={`${inputBase} ${passwordErr ? inputErr : inputOk}`}
             placeholder="At least 8 characters"
           />
@@ -237,9 +263,13 @@ export function RegisterForm() {
             name="confirm"
             type="password"
             autoComplete="new-password"
+            value={confirm}
             aria-invalid={confirmErr ? true : undefined}
             aria-describedby={confirmErr ? "register-confirm-error" : undefined}
-            onInput={() => dismissField("confirm")}
+            onChange={(e) => {
+              dismissField("confirm");
+              setConfirm(e.target.value);
+            }}
             className={`${inputBase} ${confirmErr ? inputErr : inputOk}`}
             placeholder="Repeat password"
           />
@@ -270,9 +300,13 @@ export function RegisterForm() {
               autoComplete="one-time-code"
               maxLength={6}
               pattern="\d{6}"
+              value={otp}
               aria-invalid={otpErr ? true : undefined}
               aria-describedby={otpErr ? "register-otp-error" : undefined}
-              onInput={() => dismissField("otp")}
+              onChange={(e) => {
+                dismissField("otp");
+                setOtp(e.target.value);
+              }}
               className={`${inputBase} tracking-widest ${otpErr ? inputErr : inputOk}`}
               placeholder="000000"
             />

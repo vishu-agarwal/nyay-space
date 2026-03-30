@@ -10,9 +10,9 @@ import {
 } from "@/app/(auth)/actions";
 import { AuthCard } from "@/components/auth/auth-card";
 import {
-  useForgotStep1CanSubmit,
-  useForgotStep2CanSubmit,
-  useForgotStep3CanSubmit,
+  canSubmitForgotStep1,
+  canSubmitForgotStep2,
+  canSubmitForgotStep3,
 } from "@/components/auth/use-auth-form-sync";
 
 const initial: AuthFormState = {};
@@ -49,11 +49,14 @@ export function ForgotPasswordForm() {
     initial,
   );
 
-  const { formRef: sendFormRef, canSubmit: s1Can } = useForgotStep1CanSubmit();
-  const { formRef: verifyFormRef, canSubmit: canVerify } =
-    useForgotStep2CanSubmit();
-  const { formRef: resetFormRef, canSubmit: canReset } =
-    useForgotStep3CanSubmit();
+  const [forgotIdentifier, setForgotIdentifier] = useState("");
+  const [forgotOtp, setForgotOtp] = useState("");
+  const [forgotNewPassword, setForgotNewPassword] = useState("");
+  const [forgotConfirm, setForgotConfirm] = useState("");
+
+  const s1Can = canSubmitForgotStep1(forgotIdentifier);
+  const canVerify = canSubmitForgotStep2(forgotOtp);
+  const canReset = canSubmitForgotStep3(forgotNewPassword, forgotConfirm);
 
   const [dismissed, setDismissed] = useState<
     Partial<Record<AuthFieldKey, boolean>>
@@ -69,19 +72,15 @@ export function ForgotPasswordForm() {
     queueMicrotask(() => {
       const msg = sendState.success;
       if (!msg) return;
-      const form = sendFormRef.current;
-      const el = form?.elements.namedItem("identifier") as
-        | HTMLInputElement
-        | undefined;
       const v =
-        step === 1
-          ? String(el?.value ?? "").trim()
-          : storedIdentifier;
+        step === 1 ? forgotIdentifier.trim() : storedIdentifier;
       if (v) setStoredIdentifier(v);
       setSendOtpMessage(msg);
       setStep(2);
     });
-  }, [sendState.success, step, storedIdentifier, sendFormRef]);
+    // Values read at the moment server reports success.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sendState.success]);
 
   useEffect(() => {
     if (!verifyState.success) return;
@@ -143,7 +142,6 @@ export function ForgotPasswordForm() {
       </ol>
 
       <form
-        ref={sendFormRef}
         id="forgot-send-otp"
         action={sendAction}
         className="space-y-5"
@@ -171,11 +169,15 @@ export function ForgotPasswordForm() {
               name="identifier"
               type="text"
               autoComplete="username"
+              value={forgotIdentifier}
               aria-invalid={sendIdentifierErr ? true : undefined}
               aria-describedby={
                 sendIdentifierErr ? "forgot-identifier-error" : undefined
               }
-              onInput={() => dismissField("identifier")}
+              onChange={(e) => {
+                dismissField("identifier");
+                setForgotIdentifier(e.target.value);
+              }}
               className={`${inputBase} ${sendIdentifierErr ? inputErr : inputOk}`}
               placeholder="you@example.com or +91 98765 43210"
             />
@@ -237,7 +239,6 @@ export function ForgotPasswordForm() {
                 </p>
               ) : null}
               <form
-                ref={verifyFormRef}
                 action={verifyAction}
                 className="space-y-5"
                 noValidate
@@ -271,11 +272,15 @@ export function ForgotPasswordForm() {
                     autoComplete="one-time-code"
                     maxLength={6}
                     pattern="\d{6}"
+                    value={forgotOtp}
                     aria-invalid={verifyOtpErr ? true : undefined}
                     aria-describedby={
                       verifyOtpErr ? "forgot-otp-error" : undefined
                     }
-                    onInput={() => dismissField("otp")}
+                    onChange={(e) => {
+                      dismissField("otp");
+                      setForgotOtp(e.target.value);
+                    }}
                     className={`${inputBase} tracking-widest ${verifyOtpErr ? inputErr : inputOk}`}
                     placeholder="000000"
                   />
@@ -319,6 +324,8 @@ export function ForgotPasswordForm() {
                   setStep(1);
                   setStoredIdentifier("");
                   setSendOtpMessage(null);
+                  setForgotIdentifier("");
+                  setForgotOtp("");
                 }}
               >
                 Use a different email or number
@@ -328,7 +335,6 @@ export function ForgotPasswordForm() {
 
           {step === 3 ? (
             <form
-              ref={resetFormRef}
               action={resetAction}
               className="space-y-5"
               noValidate
@@ -359,11 +365,15 @@ export function ForgotPasswordForm() {
                   name="newPassword"
                   type="password"
                   autoComplete="new-password"
+                  value={forgotNewPassword}
                   aria-invalid={resetNewErr ? true : undefined}
                   aria-describedby={
                     resetNewErr ? "forgot-new-password-error" : undefined
                   }
-                  onInput={() => dismissField("newPassword")}
+                  onChange={(e) => {
+                    dismissField("newPassword");
+                    setForgotNewPassword(e.target.value);
+                  }}
                   className={`${inputBase} ${resetNewErr ? inputErr : inputOk}`}
                   placeholder="At least 8 characters"
                 />
@@ -389,11 +399,15 @@ export function ForgotPasswordForm() {
                   name="confirm"
                   type="password"
                   autoComplete="new-password"
+                  value={forgotConfirm}
                   aria-invalid={resetConfirmErr ? true : undefined}
                   aria-describedby={
                     resetConfirmErr ? "forgot-confirm-error" : undefined
                   }
-                  onInput={() => dismissField("confirm")}
+                  onChange={(e) => {
+                    dismissField("confirm");
+                    setForgotConfirm(e.target.value);
+                  }}
                   className={`${inputBase} ${resetConfirmErr ? inputErr : inputOk}`}
                   placeholder="Repeat new password"
                 />
