@@ -481,7 +481,7 @@ export function buildCaseHistory({
     id: n.id,
     createdAt: n.createdAt,
     kind: "note",
-    title: "Case note",
+    title: n.context === "hearing" ? "Hearing note" : "Case note",
     detail: n.body,
   }));
 

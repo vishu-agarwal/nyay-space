@@ -16,13 +16,13 @@ import {
   workItemHref,
 } from "@/lib/calendar-reminders";
 import { routes } from "@/lib/routes";
+import { loadCustomCalendarEvents, saveCustomCalendarEvents } from "@/lib/calendar-custom-events";
 
 const weekdayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
 
 const REMINDER_STORAGE_KEY = "nyay-calendar-reminder-ids";
 const REMINDER_PREFS_STORAGE_KEY = "nyay-calendar-reminder-prefs";
 const ALERT_NOTIFICATIONS_ENABLED_KEY = "nyay-calendar-alert-notifications-enabled";
-const CUSTOM_EVENTS_STORAGE_KEY = "nyay-calendar-custom-events";
 
 const kindDotClass: Record<CalendarWorkKind, string> = {
   hearing: "bg-nyay-trust-mid dark:bg-nyay-trust-soft",
@@ -113,36 +113,6 @@ function leadLabel(lead: ReminderLead): string {
   if (lead === "2-day") return "Alert 2 days before";
   if (lead === "1-day") return "Alert 1 day before";
   return "Alert on hearing day";
-}
-
-const CALENDAR_KINDS = new Set<CalendarWorkKind>(["hearing", "deadline", "mediation", "meeting"]);
-
-function loadCustomEvents(): CalendarWorkItem[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(CUSTOM_EVENTS_STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as unknown;
-    if (!Array.isArray(parsed)) return [];
-    return parsed.filter((row): row is CalendarWorkItem => {
-      if (typeof row !== "object" || row === null) return false;
-      const r = row as CalendarWorkItem;
-      return (
-        typeof r.id === "string" &&
-        r.id.startsWith("ce-") &&
-        typeof r.date === "string" &&
-        typeof r.title === "string" &&
-        typeof r.caseId === "string" &&
-        CALENDAR_KINDS.has(r.kind)
-      );
-    });
-  } catch {
-    return [];
-  }
-}
-
-function saveCustomEvents(items: CalendarWorkItem[]) {
-  localStorage.setItem(CUSTOM_EVENTS_STORAGE_KEY, JSON.stringify(items));
 }
 
 function orderedKindsForDay(items: CalendarWorkItem[] | undefined): CalendarWorkKind[] {
@@ -366,7 +336,7 @@ export function AdvocateCalendar() {
     setReminderIds(loadReminderIds());
     setReminderPrefs(loadReminderPrefs());
     setAlertNotificationsEnabled(loadAlertNotificationsEnabled());
-    setCustomEvents(loadCustomEvents());
+    setCustomEvents(loadCustomCalendarEvents());
   }, []);
 
   const toggleReminder = useCallback((id: string) => {
@@ -553,7 +523,7 @@ export function AdvocateCalendar() {
       };
       setCustomEvents((prev) => {
         const next = [...prev, newItem];
-        saveCustomEvents(next);
+        saveCustomCalendarEvents(next);
         return next;
       });
       setAddEventOpen(false);

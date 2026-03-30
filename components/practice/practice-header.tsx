@@ -9,6 +9,7 @@ import {
   localISODate,
   type CalendarWorkItem,
 } from "@/lib/calendar-reminders";
+import { loadCustomCalendarEvents } from "@/lib/calendar-custom-events";
 import { loadAdvocateProfile } from "@/lib/advocate-profile";
 import { normalizeIndiaWhatsappDigits, whatsappWebUrl } from "@/lib/phone-contact";
 import { PRACTICE_WHATSAPP_DIGITS } from "@/lib/practice-contact";
@@ -18,6 +19,7 @@ import { routes } from "@/lib/routes";
 
 const nav = [
   { href: routes.home, label: "Home", match: "exact" as const },
+  { href: routes.tasks, label: "To-Do", match: "exact" as const },
   { href: routes.calendar, label: "Calendar", match: "prefix" as const },
   { href: routes.cases, label: "Cases", match: "prefix" as const },
   { href: routes.clients, label: "Clients", match: "prefix" as const },
@@ -40,7 +42,6 @@ function navLinkClass(active: boolean) {
 
 const REMINDER_STORAGE_KEY = "nyay-calendar-reminder-ids";
 const REMINDER_PREFS_STORAGE_KEY = "nyay-calendar-reminder-prefs";
-const CUSTOM_EVENTS_STORAGE_KEY = "nyay-calendar-custom-events";
 const ALERT_NOTIFICATIONS_ENABLED_KEY = "nyay-calendar-alert-notifications-enabled";
 
 type ReminderLead = "on-day" | "1-day" | "2-day";
@@ -84,18 +85,6 @@ function saveAlertNotificationsEnabled(enabled: boolean) {
   localStorage.setItem(ALERT_NOTIFICATIONS_ENABLED_KEY, enabled ? "1" : "0");
 }
 
-function loadCustomEvents(): CalendarWorkItem[] {
-  try {
-    const raw = localStorage.getItem(CUSTOM_EVENTS_STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw) as unknown;
-    if (!Array.isArray(parsed)) return [];
-    return parsed.filter((x): x is CalendarWorkItem => typeof x === "object" && x !== null);
-  } catch {
-    return [];
-  }
-}
-
 function leadToDays(lead: ReminderLead): number {
   if (lead === "2-day") return 2;
   if (lead === "1-day") return 1;
@@ -135,7 +124,7 @@ export function PracticeHeader() {
     setTodayKey(tk);
     const reminderIds = loadReminderIds();
     const reminderPrefs = loadReminderPrefs();
-    const allItems = [...getCalendarWorkItems(), ...loadCustomEvents()];
+    const allItems = [...getCalendarWorkItems(), ...loadCustomCalendarEvents()];
     const due = allItems
       .filter((it) => reminderIds.has(it.id))
       .map((it) => {

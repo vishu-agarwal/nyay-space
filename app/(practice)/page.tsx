@@ -194,6 +194,15 @@ export default function DashboardPage() {
         <p className="mt-2 max-w-2xl text-sm text-nyay-muted">
           Hearings, deadlines, and active matters at a glance.
         </p>
+        <p className="mt-4 text-sm">
+          <Link
+            href={routes.tasks}
+            className="font-semibold text-nyay-authority-rich underline-offset-2 hover:underline dark:text-nyay-authority"
+          >
+            Tasks / To-Do
+          </Link>
+          <span className="text-nyay-muted"> — per matter, due dates, priority</span>
+        </p>
       </header>
 
         <section aria-labelledby="quick-stats-heading" className="mb-6">

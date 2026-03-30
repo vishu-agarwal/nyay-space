@@ -15,8 +15,25 @@ import {
   type DocumentTag,
   type ManagedDocument,
 } from "@/lib/document-management";
+import { openPrintableHtml, downloadTextFile } from "@/lib/print-utils";
+import { routes } from "@/lib/routes";
 
 const TAGS: DocumentTag[] = ["FIR", "Agreement", "Evidence"];
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function stripHtmlToText(html: string): string {
+  if (typeof document === "undefined") return html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  const div = document.createElement("div");
+  div.innerHTML = html;
+  return div.textContent?.replace(/\s+/g, " ").trim() ?? "";
+}
 
 function formatTime(iso: string): string {
   const d = new Date(iso);
@@ -94,6 +111,46 @@ export default function DocumentsPage() {
   const openEditor = (doc: ManagedDocument) => {
     setSelected(doc);
     setEditorHtml(doc.content || "");
+  };
+
+  const clientLabelFor = (doc: ManagedDocument) => clientDisplayName(doc.clientId, allClients);
+
+  const printDocumentRecord = (doc: ManagedDocument) => {
+    const cl = clientLabelFor(doc);
+    const snippet = stripHtmlToText(doc.content || "").slice(0, 4000);
+    const body = `
+      <h1>${escapeHtml(doc.title)}</h1>
+      <p><strong>File</strong> ${escapeHtml(doc.fileName)} · ${doc.sizeKb} KB</p>
+      <p><strong>Case</strong> ${escapeHtml(doc.caseId || "—")} · <strong>Client</strong> ${escapeHtml(cl)}</p>
+      <p><strong>Folder</strong> ${escapeHtml(doc.folderPath.join(" / ") || "—")}</p>
+      <p><strong>Tags</strong> ${escapeHtml(doc.tags.join(", "))}</p>
+      <p><strong>Link</strong> ${escapeHtml(doc.link)}</p>
+      <p><strong>Updated</strong> ${escapeHtml(formatTime(doc.updatedAt))}</p>
+      <h2>Notes / extracted text</h2>
+      <pre>${escapeHtml(snippet || "—")}</pre>
+    `;
+    openPrintableHtml(doc.title, body);
+  };
+
+  const downloadDocumentRecord = (doc: ManagedDocument) => {
+    const cl = clientLabelFor(doc);
+    const text = [
+      `Document: ${doc.title}`,
+      `File: ${doc.fileName} (${doc.sizeKb} KB)`,
+      `Case: ${doc.caseId || "—"}`,
+      `Client: ${cl}`,
+      `Folder: ${doc.folderPath.join(" / ") || "—"}`,
+      `Tags: ${doc.tags.join(", ")}`,
+      `Link: ${doc.link}`,
+      `Updated: ${formatTime(doc.updatedAt)}`,
+      "",
+      "Notes / extracted text:",
+      stripHtmlToText(doc.content || "") || "—",
+      "",
+      `Nyay Space · ${new Date().toLocaleString("en-IN")}`,
+    ].join("\n");
+    const safe = doc.fileName.replace(/[^\w.\-]+/g, "_").slice(0, 80);
+    downloadTextFile(`document-${safe}.txt`, text);
   };
 
   useEffect(() => {
@@ -449,9 +506,15 @@ export default function DocumentsPage() {
                       <td className="px-3 py-2 text-xs text-nyay-muted">{doc.folderPath.join(" / ") || "—"}</td>
                       <td className="px-3 py-2 text-xs text-nyay-muted">{doc.tags.join(", ")}</td>
                       <td className="px-3 py-2">
-                        <div className="flex gap-1.5">
+                        <div className="flex flex-wrap gap-1.5">
                           <button type="button" onClick={() => openEditor(doc)} className="rounded border border-nyay-border px-2 py-1 text-xs font-semibold">
                             Edit
+                          </button>
+                          <button type="button" onClick={() => printDocumentRecord(doc)} className="rounded border border-nyay-border px-2 py-1 text-xs font-semibold">
+                            Print
+                          </button>
+                          <button type="button" onClick={() => downloadDocumentRecord(doc)} className="rounded border border-nyay-border px-2 py-1 text-xs font-semibold">
+                            Download
                           </button>
                           <button type="button" onClick={() => unattachDocument(doc)} className="rounded border border-nyay-border px-2 py-1 text-xs font-semibold">
                             Unattach
@@ -480,9 +543,15 @@ export default function DocumentsPage() {
                         <li key={doc.id} className="rounded border border-nyay-border/60 bg-nyay-surface p-2">
                           <p className="text-sm font-medium text-nyay-trust">{doc.title}</p>
                           <p className="text-xs text-nyay-muted">{doc.folderPath.join(" / ")}</p>
-                          <div className="mt-2 flex gap-1.5">
+                          <div className="mt-2 flex flex-wrap gap-1.5">
                             <button type="button" onClick={() => openEditor(doc)} className="rounded border border-nyay-border px-2 py-1 text-xs font-semibold">
                               Edit
+                            </button>
+                            <button type="button" onClick={() => printDocumentRecord(doc)} className="rounded border border-nyay-border px-2 py-1 text-xs font-semibold">
+                              Print
+                            </button>
+                            <button type="button" onClick={() => downloadDocumentRecord(doc)} className="rounded border border-nyay-border px-2 py-1 text-xs font-semibold">
+                              Download
                             </button>
                             <button type="button" onClick={() => unattachDocument(doc)} className="rounded border border-nyay-border px-2 py-1 text-xs font-semibold">
                               Unattach
@@ -514,9 +583,33 @@ export default function DocumentsPage() {
                 <p className="mt-1 text-sm text-nyay-trust">
                   Case: {selected.caseId} · Client: {clientDisplayName(selected.clientId, allClients)}
                 </p>
-                <a href={selected.link} target="_blank" rel="noreferrer" className="mt-1 inline-block text-sm text-nyay-authority hover:underline">
-                  Open attached link
-                </a>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <a href={selected.link} target="_blank" rel="noreferrer" className="text-sm text-nyay-authority hover:underline">
+                    Open attached link
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => printDocumentRecord(selected)}
+                    className="text-sm font-semibold text-nyay-authority-rich hover:underline dark:text-nyay-authority"
+                  >
+                    Print record
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => downloadDocumentRecord(selected)}
+                    className="text-sm font-semibold text-nyay-authority-rich hover:underline dark:text-nyay-authority"
+                  >
+                    Download .txt
+                  </button>
+                  {selected.caseId ? (
+                    <a
+                      href={routes.case(selected.caseId)}
+                      className="text-sm font-semibold text-nyay-authority-rich hover:underline dark:text-nyay-authority"
+                    >
+                      Open matter
+                    </a>
+                  ) : null}
+                </div>
               </div>
 
               <label className="block text-sm text-nyay-muted">

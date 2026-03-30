@@ -9,6 +9,8 @@ export type PracticeNote = {
   /** ISO 8601 */
   createdAt: string;
   body: string;
+  /** Present when saved as a hearing note (case entity only). */
+  context?: "hearing";
 };
 
 export type NotesEntity = "case" | "client";
@@ -22,11 +24,15 @@ function storageKey(entity: NotesEntity): string {
 function isPracticeNote(x: unknown): x is PracticeNote {
   if (x === null || typeof x !== "object") return false;
   const o = x as Record<string, unknown>;
-  return (
-    typeof o.id === "string" &&
-    typeof o.createdAt === "string" &&
-    typeof o.body === "string"
-  );
+  if (
+    typeof o.id !== "string" ||
+    typeof o.createdAt !== "string" ||
+    typeof o.body !== "string"
+  ) {
+    return false;
+  }
+  if (o.context !== undefined && o.context !== "hearing") return false;
+  return true;
 }
 
 export function parseNotesMap(raw: string | null): NotesMap {
@@ -77,6 +83,7 @@ export function addPracticeNote(
   entity: NotesEntity,
   entityId: string,
   body: string,
+  opts?: { context?: "hearing" },
 ): void {
   const trimmed = body.trim();
   if (!trimmed) return;
@@ -86,6 +93,7 @@ export function addPracticeNote(
     id: newNoteId(),
     createdAt: new Date().toISOString(),
     body: trimmed,
+    ...(entity === "case" && opts?.context === "hearing" ? { context: "hearing" as const } : {}),
   };
   map[entityId] = [note, ...list];
   saveNotesMap(entity, map);

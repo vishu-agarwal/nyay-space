@@ -3,6 +3,8 @@ import { getCaseDetailForId } from "@/lib/cases";
 import { CaseClientBlock } from "./case-client-block";
 import { CaseDetailClient } from "@/components/case-management/case-detail-client";
 import { DocumentsPanel } from "@/components/case-management/documents-panel";
+import { MatterPrintActions } from "@/components/case-management/matter-print-actions";
+import { CaseTasksPanel } from "@/components/practice/case-tasks-panel";
 
 type PageProps = { params: Promise<{ id: string }> };
 
@@ -138,6 +140,22 @@ export default async function CaseDetailPage({ params }: PageProps) {
                 </div>
               ) : null}
             </dl>
+
+            <div className="mt-4 border-t border-white/10 pt-4">
+              <MatterPrintActions
+                caseId={matter?.id ?? id}
+                title={matter?.title ?? `Case ${id}`}
+                court={matter?.court ?? ""}
+                stage={matter?.stage ?? ""}
+                next={matter?.next ?? ""}
+                synopsis={extra?.synopsis ?? ""}
+                nextHearing={extra?.nextHearing ?? ""}
+                filedOn={extra?.filedOn ?? ""}
+                judge={extra?.judge ?? ""}
+                opposingParty={extra?.opposingParty ?? ""}
+                opposingCounsel={extra?.opposingCounsel ?? ""}
+              />
+            </div>
           </div>
       </header>
 
@@ -148,10 +166,8 @@ export default async function CaseDetailPage({ params }: PageProps) {
           </main>
 
           {/* Documents — side */}
-          <aside
-            className="lg:sticky lg:top-6 lg:self-start"
-            aria-labelledby="documents-heading"
-          >
+          <aside className="flex flex-col gap-4 lg:sticky lg:top-6 lg:self-start">
+            <CaseTasksPanel caseId={matter?.id ?? id} matterTitle={matter?.title} />
             <div id="documents-heading">
               <DocumentsPanel documents={extra?.documents ?? []} />
             </div>

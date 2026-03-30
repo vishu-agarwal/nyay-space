@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { routes } from "@/lib/routes";
 
 const SEGMENT_LABELS: Record<string, string> = {
+  tasks: "Tasks / To-Do",
   calendar: "Calendar",
   cases: "Cases",
   clients: "Clients",

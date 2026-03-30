@@ -169,6 +169,10 @@ export function CaseDetailClient({
       </div>
 
       <div className="mt-5">
+        <CasePracticeNotes entityId={caseId} caseLabel={caseId} />
+      </div>
+
+      <div className="mt-5">
         <h2 className="mb-3 flex items-center gap-2 text-lg font-semibold text-nyay-trust dark:text-foreground">
           <span className="h-1 w-8 rounded-full bg-nyay-authority" aria-hidden />
           Case timeline
@@ -227,7 +231,13 @@ export function CaseDetailClient({
                       {formatDisplayDateTime(h.createdAt)}
                     </time>
                     <span className="rounded-md bg-nyay-canvas px-2 py-0.5 text-xs font-semibold text-nyay-trust-mid ring-1 ring-nyay-border">
-                      {h.kind === "status" ? "Status" : h.kind === "timeline" ? "Timeline" : "Note"}
+                      {h.kind === "status"
+                        ? "Status"
+                        : h.kind === "timeline"
+                          ? "Timeline"
+                          : h.title.startsWith("Hearing")
+                            ? "Hearing"
+                            : "Note"}
                     </span>
                   </div>
                   <h3 className="mt-2 text-base font-semibold text-nyay-trust dark:text-foreground">{h.title}</h3>
@@ -239,10 +249,6 @@ export function CaseDetailClient({
             ))}
           </ul>
         )}
-      </div>
-
-      <div className="mt-6">
-        <CasePracticeNotes entityId={caseId} />
       </div>
 
       <AddTimelineEventModal open={addOpen} onOpenChange={setAddOpen} caseId={caseId} />
