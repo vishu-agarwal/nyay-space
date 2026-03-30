@@ -131,8 +131,15 @@ export function PracticeQuickAddFab() {
         open={docPickerOpen}
         onOpenChange={setDocPickerOpen}
         title="Add document"
-        description="Open a matter to use the documents panel on the case page."
+        description="Open a matter or go to the document workspace."
       >
+        <Link
+          href={routes.documents}
+          onClick={() => setDocPickerOpen(false)}
+          className="mb-2 block rounded-lg border border-nyay-border bg-nyay-canvas px-3 py-2.5 text-sm font-semibold text-nyay-trust hover:bg-nyay-surface dark:text-foreground"
+        >
+          Open full document workspace
+        </Link>
         <ul className="max-h-[min(50vh,20rem)] space-y-1 overflow-y-auto pr-1">
           {matters.map((m) => (
             <li key={m.id}>

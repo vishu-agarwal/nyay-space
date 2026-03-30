@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { MaskIcon } from "@/components/icons/mask-icon";
 import { mergeClients, clientDisplayName } from "@/lib/clients";
 import { effectiveClientId } from "@/lib/matter-client-overrides";
 import type { CaseStatus, CaseType } from "@/lib/cases";
@@ -10,6 +9,7 @@ import { useAdvocateCaseList } from "@/lib/use-case-management-store";
 import { useNyayStorage } from "@/lib/use-nyay-storage";
 import { routes } from "@/lib/routes";
 import { FilterOptionsMenu } from "@/components/practice/filter-options-menu";
+import { SearchFilterToolbar } from "@/components/practice/search-filter-toolbar";
 
 type StatusFilter = "all" | CaseStatus;
 type TypeFilter = "all" | CaseType;
@@ -51,25 +51,14 @@ export default function CasesListingPage() {
         </p>
       </header>
 
-        <div
-          className="mb-4 flex flex-col gap-3 rounded-xl border border-nyay-border bg-nyay-surface p-3 nyay-card-shadow sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
-          role="search"
+        <SearchFilterToolbar
+          searchLabel="Search cases"
+          searchPlaceholder="Search by ID, title, client, court..."
+          query={query}
+          onQueryChange={setQuery}
+          view={view}
+          onViewChange={setView}
         >
-          <label className="relative min-w-[min(100%,280px)] flex-1">
-            <span className="sr-only">Search cases</span>
-            <input
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search by ID, title, client, court…"
-              className="w-full rounded-lg border border-nyay-border bg-nyay-canvas px-3 py-2.5 pl-10 text-sm text-nyay-trust placeholder:text-nyay-muted/70 focus:border-nyay-trust-mid focus:outline-none focus:ring-2 focus:ring-nyay-authority/30 dark:bg-nyay-canvas dark:text-foreground"
-            />
-            <MaskIcon
-              name="search"
-              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-nyay-muted"
-            />
-          </label>
-
           <FilterOptionsMenu
             title="Status"
             tone="trust"
@@ -101,42 +90,7 @@ export default function CasesListingPage() {
             onChange={setCaseType}
             defaultValue="all"
           />
-
-          <div
-            className="flex rounded-lg border border-nyay-border p-0.5"
-            role="group"
-            aria-label="Result layout"
-          >
-            <button
-              type="button"
-              onClick={() => setView("list")}
-              aria-pressed={view === "list"}
-              title="List view"
-              aria-label="List view"
-              className={`flex items-center justify-center rounded-md p-2 transition-colors ${
-                view === "list"
-                  ? "bg-nyay-authority-soft text-nyay-authority-fg ring-1 ring-nyay-authority/40 dark:text-nyay-authority"
-                  : "text-nyay-muted hover:text-nyay-trust dark:hover:text-foreground"
-              }`}
-            >
-              <MaskIcon name="layout-list" className="h-4 w-4 shrink-0" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setView("card")}
-              aria-pressed={view === "card"}
-              title="Card view"
-              aria-label="Card view"
-              className={`flex items-center justify-center rounded-md p-2 transition-colors ${
-                view === "card"
-                  ? "bg-nyay-authority-soft text-nyay-authority-fg ring-1 ring-nyay-authority/40 dark:text-nyay-authority"
-                  : "text-nyay-muted hover:text-nyay-trust dark:hover:text-foreground"
-              }`}
-            >
-              <MaskIcon name="layout-grid" className="h-4 w-4 shrink-0" />
-            </button>
-          </div>
-        </div>
+        </SearchFilterToolbar>
 
         <p className="mb-3 text-sm text-nyay-muted" aria-live="polite">
           {filtered.length === cases.length

@@ -20,6 +20,8 @@ import { routes } from "@/lib/routes";
 const weekdayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
 
 const REMINDER_STORAGE_KEY = "nyay-calendar-reminder-ids";
+const REMINDER_PREFS_STORAGE_KEY = "nyay-calendar-reminder-prefs";
+const ALERT_NOTIFICATIONS_ENABLED_KEY = "nyay-calendar-alert-notifications-enabled";
 const CUSTOM_EVENTS_STORAGE_KEY = "nyay-calendar-custom-events";
 
 const kindDotClass: Record<CalendarWorkKind, string> = {
@@ -62,6 +64,55 @@ function loadReminderIds(): Set<string> {
 
 function saveReminderIds(ids: Set<string>) {
   localStorage.setItem(REMINDER_STORAGE_KEY, JSON.stringify([...ids]));
+}
+
+type ReminderLead = "on-day" | "1-day" | "2-day";
+type ToastItem = { id: string; title: string; message: string };
+
+function loadReminderPrefs(): Record<string, ReminderLead> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = localStorage.getItem(REMINDER_PREFS_STORAGE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw) as unknown;
+    if (!parsed || typeof parsed !== "object") return {};
+    const out: Record<string, ReminderLead> = {};
+    for (const [id, lead] of Object.entries(parsed as Record<string, unknown>)) {
+      if (lead === "on-day" || lead === "1-day" || lead === "2-day") {
+        out[id] = lead;
+      }
+    }
+    return out;
+  } catch {
+    return {};
+  }
+}
+
+function saveReminderPrefs(prefs: Record<string, ReminderLead>) {
+  localStorage.setItem(REMINDER_PREFS_STORAGE_KEY, JSON.stringify(prefs));
+}
+
+function loadAlertNotificationsEnabled(): boolean {
+  if (typeof window === "undefined") return true;
+  const raw = localStorage.getItem(ALERT_NOTIFICATIONS_ENABLED_KEY);
+  if (raw == null) return true;
+  return raw === "1";
+}
+
+function saveAlertNotificationsEnabled(enabled: boolean) {
+  localStorage.setItem(ALERT_NOTIFICATIONS_ENABLED_KEY, enabled ? "1" : "0");
+}
+
+function leadToDays(lead: ReminderLead): number {
+  if (lead === "2-day") return 2;
+  if (lead === "1-day") return 1;
+  return 0;
+}
+
+function leadLabel(lead: ReminderLead): string {
+  if (lead === "2-day") return "Alert 2 days before";
+  if (lead === "1-day") return "Alert 1 day before";
+  return "Alert on hearing day";
 }
 
 const CALENDAR_KINDS = new Set<CalendarWorkKind>(["hearing", "deadline", "mediation", "meeting"]);
@@ -135,6 +186,13 @@ function formatTimeFromTimeInput(hm: string): string {
   });
 }
 
+function isoDayDiff(fromIso: string, toIso: string): number {
+  const from = new Date(fromIso + "T12:00:00").getTime();
+  const to = new Date(toIso + "T12:00:00").getTime();
+  if (Number.isNaN(from) || Number.isNaN(to)) return 0;
+  return Math.round((to - from) / (24 * 60 * 60 * 1000));
+}
+
 const monthNames = [
   "January",
   "February",
@@ -192,12 +250,16 @@ function WorkListRow({
   item,
   todayKey,
   reminderOn,
+  reminderLead,
   onToggleReminder,
+  onChangeReminderLead,
 }: {
   item: CalendarWorkItem;
   todayKey: string;
   reminderOn: boolean;
+  reminderLead: ReminderLead;
   onToggleReminder: (id: string) => void;
+  onChangeReminderLead: (id: string, lead: ReminderLead) => void;
 }) {
   const rel = relativeDayLabel(item.date, todayKey);
   const href = workItemHref(item);
@@ -238,6 +300,21 @@ function WorkListRow({
         {sub ? <p className="text-[11px] leading-tight text-nyay-muted">{sub}</p> : null}
       </Link>
       <div className="flex shrink-0 flex-col justify-center py-1 pl-0.5">
+        {reminderOn ? (
+          <label className="mb-1 block text-[10px] text-nyay-muted">
+            <span className="sr-only">Alert timing for {item.title}</span>
+            <select
+              value={reminderLead}
+              onChange={(e) => onChangeReminderLead(item.id, e.target.value as ReminderLead)}
+              className="rounded border border-nyay-border bg-nyay-surface px-1 py-0.5 text-[10px] text-nyay-trust focus:border-nyay-authority focus:outline-none focus:ring-1 focus:ring-nyay-authority/25 dark:bg-white/5 dark:text-foreground"
+              aria-label={`Alert timing for ${item.title}`}
+            >
+              <option value="on-day">On day</option>
+              <option value="1-day">1 day before</option>
+              <option value="2-day">2 days before</option>
+            </select>
+          </label>
+        ) : null}
         <button
           type="button"
           onClick={() => onToggleReminder(item.id)}
@@ -259,13 +336,23 @@ function WorkListRow({
 
 export function AdvocateCalendar() {
   const [todayKey] = useState(() => localISODate(new Date()));
+  const [tomorrowKey] = useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    return localISODate(d);
+  });
   const [selectedISO, setSelectedISO] = useState(() => localISODate(new Date()));
   const [cursor, setCursor] = useState(() => {
     const d = new Date();
     return { y: d.getFullYear(), m: d.getMonth() };
   });
   const [reminderIds, setReminderIds] = useState<Set<string>>(() => new Set());
+  const [reminderPrefs, setReminderPrefs] = useState<Record<string, ReminderLead>>({});
   const [customEvents, setCustomEvents] = useState<CalendarWorkItem[]>([]);
+  const [focusView, setFocusView] = useState<"today" | "tomorrow">("today");
+  const [alertNotificationsEnabled, setAlertNotificationsEnabled] = useState(true);
+  const [toasts, setToasts] = useState<ToastItem[]>([]);
+  const [notifiedAlertKeys, setNotifiedAlertKeys] = useState<Set<string>>(() => new Set());
   const [addEventOpen, setAddEventOpen] = useState(false);
   const [addEventDate, setAddEventDate] = useState<string | null>(null);
   const [eventTitle, setEventTitle] = useState("");
@@ -277,6 +364,8 @@ export function AdvocateCalendar() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrate persisted reminder IDs once on client
     setReminderIds(loadReminderIds());
+    setReminderPrefs(loadReminderPrefs());
+    setAlertNotificationsEnabled(loadAlertNotificationsEnabled());
     setCustomEvents(loadCustomEvents());
   }, []);
 
@@ -286,6 +375,24 @@ export function AdvocateCalendar() {
       if (next.has(id)) next.delete(id);
       else next.add(id);
       saveReminderIds(next);
+      return next;
+    });
+    setReminderPrefs((prev) => {
+      const next = { ...prev };
+      if (id in next) {
+        delete next[id];
+      } else {
+        next[id] = "1-day";
+      }
+      saveReminderPrefs(next);
+      return next;
+    });
+  }, []);
+
+  const changeReminderLead = useCallback((id: string, lead: ReminderLead) => {
+    setReminderPrefs((prev) => {
+      const next = { ...prev, [id]: lead };
+      saveReminderPrefs(next);
       return next;
     });
   }, []);
@@ -312,6 +419,11 @@ export function AdvocateCalendar() {
     if (!selectedISO) return [];
     return byDate.get(selectedISO) ?? [];
   }, [byDate, selectedISO]);
+
+  const tomorrowItems = useMemo(() => byDate.get(tomorrowKey) ?? [], [byDate, tomorrowKey]);
+
+  const focusItems = focusView === "today" ? todayItems : tomorrowItems;
+  const focusDate = focusView === "today" ? todayKey : tomorrowKey;
 
   const upcomingItems = useMemo(() => {
     if (!todayKey) return [];
@@ -355,6 +467,56 @@ export function AdvocateCalendar() {
 
   const selectedHeading =
     selectedISO === todayKey ? "Today's schedule" : formatISODateLong(selectedISO);
+
+  const upcomingAlertItems = useMemo(() => {
+    return allItems
+      .filter((it) => it.kind === "hearing" && reminderIds.has(it.id))
+      .map((it) => {
+        const lead = reminderPrefs[it.id] ?? "1-day";
+        const until = isoDayDiff(todayKey, it.date);
+        return { item: it, lead, until };
+      })
+      .filter((row) => row.until >= 0 && row.until <= leadToDays(row.lead))
+      .sort((a, b) => {
+        const c = a.item.date.localeCompare(b.item.date);
+        if (c !== 0) return c;
+        return (a.item.time ?? "").localeCompare(b.item.time ?? "");
+      })
+      .slice(0, 8);
+  }, [allItems, reminderIds, reminderPrefs, todayKey]);
+
+  const pushToast = useCallback((title: string, message: string) => {
+    const id = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+    setToasts((prev) => [...prev, { id, title, message }]);
+    window.setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 5000);
+  }, []);
+
+  useEffect(() => {
+    if (!alertNotificationsEnabled) return;
+    if (upcomingAlertItems.length === 0) return;
+
+    const newDue = upcomingAlertItems.filter(
+      ({ item, lead }) => !notifiedAlertKeys.has(`${item.id}:${todayKey}:${lead}`),
+    );
+    if (newDue.length === 0) return;
+
+    const first = newDue[0];
+    pushToast(
+      "Hearing alert",
+      `${first.item.title} · ${first.until === 0 ? "Today" : first.until === 1 ? "Tomorrow" : `In ${first.until} days`}`,
+    );
+    if (newDue.length > 1) {
+      pushToast("More alerts", `${newDue.length - 1} more reminder(s) need attention.`);
+    }
+
+    setNotifiedAlertKeys((prev) => {
+      const next = new Set(prev);
+      for (const row of newDue) next.add(`${row.item.id}:${todayKey}:${row.lead}`);
+      return next;
+    });
+  }, [alertNotificationsEnabled, notifiedAlertKeys, pushToast, todayKey, upcomingAlertItems]);
 
   const dayHasReminder = useCallback(
     (iso: string) => {
@@ -413,19 +575,45 @@ export function AdvocateCalendar() {
                 id="today-diary-heading"
                 className="text-base font-semibold text-nyay-trust dark:text-foreground"
               >
-                Today&apos;s work
+                Today / Tomorrow
               </h2>
-              <time
-                className="text-[11px] font-medium tabular-nums text-nyay-muted"
-                dateTime={todayKey}
-              >
-                {formatISODateLong(todayKey)}
-              </time>
+              <div className="inline-flex items-center rounded-md border border-nyay-border bg-nyay-canvas/50 p-0.5 text-[11px]">
+                <button
+                  type="button"
+                  onClick={() => setFocusView("today")}
+                  aria-pressed={focusView === "today"}
+                  className={[
+                    "rounded px-2 py-0.5 font-medium transition-colors",
+                    focusView === "today"
+                      ? "bg-nyay-authority-soft text-nyay-authority-rich dark:text-nyay-authority"
+                      : "text-nyay-muted hover:text-nyay-trust dark:hover:text-foreground",
+                  ].join(" ")}
+                >
+                  Today
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFocusView("tomorrow")}
+                  aria-pressed={focusView === "tomorrow"}
+                  className={[
+                    "rounded px-2 py-0.5 font-medium transition-colors",
+                    focusView === "tomorrow"
+                      ? "bg-nyay-authority-soft text-nyay-authority-rich dark:text-nyay-authority"
+                      : "text-nyay-muted hover:text-nyay-trust dark:hover:text-foreground",
+                  ].join(" ")}
+                >
+                  Tomorrow
+                </button>
+              </div>
             </div>
-            {todayItems.length === 0 ? (
+            <time className="mt-1 block text-[11px] font-medium tabular-nums text-nyay-muted" dateTime={focusDate}>
+              {formatISODateLong(focusDate)}
+            </time>
+            {focusItems.length === 0 ? (
               <p className="mt-2 shrink-0 text-xs leading-relaxed text-nyay-muted">
-                Nothing scheduled for today in the loaded diary. Select another date on the calendar
-                or add hearings and tasks to your matters.
+                {focusView === "today"
+                  ? "Nothing scheduled for today in the loaded diary. Select another date on the calendar or add hearings and tasks to your matters."
+                  : "Nothing scheduled for tomorrow. This is a good slot for drafting, research, or client follow-ups."}
               </p>
             ) : (
               <ul
@@ -433,13 +621,15 @@ export function AdvocateCalendar() {
                 aria-label="Today entries, scroll for more"
                 style={{ WebkitOverflowScrolling: "touch" }}
               >
-                {todayItems.map((item) => (
+                {focusItems.map((item) => (
                   <WorkListRow
                     key={item.id}
                     item={item}
                     todayKey={todayKey}
                     reminderOn={reminderIds.has(item.id)}
+                    reminderLead={reminderPrefs[item.id] ?? "1-day"}
                     onToggleReminder={toggleReminder}
+                    onChangeReminderLead={changeReminderLead}
                   />
                 ))}
               </ul>
@@ -475,7 +665,9 @@ export function AdvocateCalendar() {
                     item={item}
                     todayKey={todayKey || selectedISO}
                     reminderOn={reminderIds.has(item.id)}
+                    reminderLead={reminderPrefs[item.id] ?? "1-day"}
                     onToggleReminder={toggleReminder}
+                    onChangeReminderLead={changeReminderLead}
                   />
                 ))}
               </ul>
@@ -580,7 +772,90 @@ export function AdvocateCalendar() {
           Reminders and added events are stored in this browser only. Diary rows with a case ID
           open that matter; timeline links scroll to the event when present.
         </p>
+        <section
+          aria-labelledby="alerts-heading"
+          className="rounded-lg border border-nyay-border bg-nyay-surface p-2.5 nyay-card-shadow"
+        >
+          <div className="flex items-center justify-between gap-2">
+            <h2 id="alerts-heading" className="text-sm font-semibold text-nyay-trust dark:text-foreground">
+              Alerts before hearing
+            </h2>
+            <button
+              type="button"
+              onClick={() =>
+                setAlertNotificationsEnabled((prev) => {
+                  const next = !prev;
+                  saveAlertNotificationsEnabled(next);
+                  return next;
+                })
+              }
+              title={alertNotificationsEnabled ? "Pause alert popups" : "Enable alert popups"}
+              aria-pressed={alertNotificationsEnabled}
+              aria-label={alertNotificationsEnabled ? "Pause alert popups" : "Enable alert popups"}
+              className={`inline-flex size-8 items-center justify-center rounded-md border transition-colors ${
+                alertNotificationsEnabled
+                  ? "border-nyay-authority bg-nyay-authority-soft text-nyay-authority-rich dark:text-nyay-authority"
+                  : "border-nyay-border text-nyay-muted hover:border-nyay-authority/50 hover:text-nyay-trust dark:hover:text-foreground"
+              }`}
+            >
+              <MaskIcon name="bell" className="size-4" />
+            </button>
+          </div>
+          <p className="mt-0.5 text-[11px] leading-snug text-nyay-muted">
+            Based on your selected alert timing for each hearing. Bell controls popup toasts.
+          </p>
+          <ul className="mt-2 space-y-1.5">
+            {upcomingAlertItems.length === 0 ? (
+              <li className="text-[11px] text-nyay-muted">
+                No active hearing alerts right now. Turn on the bell for a hearing to get pre-hearing alerts.
+              </li>
+            ) : (
+              upcomingAlertItems.map(({ item, lead, until }) => (
+                <li key={`alert-${item.id}`} className="rounded-md border border-nyay-border px-2 py-1.5">
+                  <p className="text-xs font-medium text-nyay-trust dark:text-foreground">{item.title}</p>
+                  <p className="text-[11px] text-nyay-muted">
+                    {formatISODateLong(item.date)}
+                    {item.time ? ` · ${item.time}` : ""}
+                    {" · "}
+                    {until === 0 ? "Today" : until === 1 ? "Tomorrow" : `In ${until} days`}
+                  </p>
+                  <p className="text-[10px] text-nyay-authority-rich dark:text-nyay-authority">
+                    {leadLabel(lead)}
+                  </p>
+                </li>
+              ))
+            )}
+          </ul>
+        </section>
       </aside>
+      <div className="pointer-events-none fixed bottom-3 right-3 z-[70] flex w-[min(24rem,calc(100vw-1.5rem))] flex-col gap-2">
+        {toasts.map((t) => (
+          <div
+            key={t.id}
+            role="status"
+            aria-live="polite"
+            className="pointer-events-auto rounded-lg border border-nyay-border bg-nyay-surface px-3 py-2 nyay-card-shadow"
+          >
+            <div className="flex items-start gap-2">
+              <span className="mt-0.5 rounded-md bg-nyay-authority-soft p-1 text-nyay-authority-rich dark:text-nyay-authority">
+                <MaskIcon name="bell" className="size-3.5" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-semibold text-nyay-trust dark:text-foreground">{t.title}</p>
+                <p className="text-[11px] leading-snug text-nyay-muted">{t.message}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setToasts((prev) => prev.filter((x) => x.id !== t.id))}
+                className="rounded px-1 text-[11px] text-nyay-muted hover:text-nyay-trust dark:hover:text-foreground"
+                aria-label="Dismiss notification"
+              >
+                x
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
 
       <div className="order-2 mx-auto flex w-full max-w-[20 rem] shrink-0 flex-col gap-2 lg:sticky lg:top-6 lg:mx-0 lg:self-start">
         <div

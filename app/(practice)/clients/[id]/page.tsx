@@ -9,6 +9,12 @@ import { ClientContactActions } from "@/components/contact/client-contact-action
 import { SupportWhatsAppDraftModal } from "@/components/contact/support-whatsapp-draft-modal";
 import { matters, type Matter } from "@/lib/cases";
 import {
+  type ClientMeeting,
+  type ClientReminder,
+  saveClientWorkspacePartial,
+  useClientWorkspaceMap,
+} from "@/lib/client-workspace";
+import {
   CLIENTS_SEED,
   mergeClients,
   saveExtraClients,
@@ -37,9 +43,15 @@ export default function ClientDetailPage() {
   const clientId = typeof rawId === "string" ? rawId : rawId?.[0] ?? "";
 
   const { extraClients, overrides, hydrated } = useNyayStorage();
+  const workspaceMap = useClientWorkspaceMap();
   const [linkMatterId, setLinkMatterId] = useState("");
   const [editOpen, setEditOpen] = useState(false);
   const [supportOpen, setSupportOpen] = useState(false);
+  const [reminderTitle, setReminderTitle] = useState("");
+  const [reminderDate, setReminderDate] = useState("");
+  const [meetingTitle, setMeetingTitle] = useState("");
+  const [meetingWhen, setMeetingWhen] = useState("");
+  const [meetingMode, setMeetingMode] = useState<ClientMeeting["mode"]>("office");
 
   const allClients = useMemo(
     () => mergeClients(extraClients),
@@ -98,6 +110,68 @@ export default function ClientDetailPage() {
   if (!clientId || !client) {
     notFound();
   }
+
+  const workspace = workspaceMap[clientId] ?? {
+    clientId,
+    specialNotes: "",
+    consultationNotes: "",
+    adviceLog: "",
+    documentsSummary: "",
+    reminders: [] as ClientReminder[],
+    meetings: [] as ClientMeeting[],
+  };
+
+  const saveTextField = (
+    key: "specialNotes" | "consultationNotes" | "adviceLog" | "documentsSummary",
+    value: string,
+  ) => {
+    saveClientWorkspacePartial(clientId, { [key]: value });
+  };
+
+  const addReminder = () => {
+    const title = reminderTitle.trim();
+    const dueOn = reminderDate.trim();
+    if (!title || !dueOn) return;
+    const next: ClientReminder = {
+      id: `rem-${Date.now().toString(36)}`,
+      title,
+      dueOn,
+      done: false,
+    };
+    saveClientWorkspacePartial(clientId, { reminders: [...workspace.reminders, next] });
+    setReminderTitle("");
+    setReminderDate("");
+  };
+
+  const toggleReminder = (id: string) => {
+    saveClientWorkspacePartial(clientId, {
+      reminders: workspace.reminders.map((r) =>
+        r.id === id ? { ...r, done: !r.done } : r,
+      ),
+    });
+  };
+
+  const deleteReminder = (id: string) => {
+    saveClientWorkspacePartial(clientId, {
+      reminders: workspace.reminders.filter((r) => r.id !== id),
+    });
+  };
+
+  const addMeeting = () => {
+    const title = meetingTitle.trim();
+    const when = meetingWhen.trim();
+    if (!title || !when) return;
+    const next: ClientMeeting = {
+      id: `meet-${Date.now().toString(36)}`,
+      title,
+      when,
+      mode: meetingMode,
+    };
+    saveClientWorkspacePartial(clientId, { meetings: [...workspace.meetings, next] });
+    setMeetingTitle("");
+    setMeetingWhen("");
+    setMeetingMode("office");
+  };
 
   const matterOptions = matters.map((m) => ({
     id: m.id,
@@ -190,6 +264,215 @@ export default function ClientDetailPage() {
           </div>
       </header>
 
+      <section className="mt-6 grid gap-3 sm:grid-cols-4">
+        <div className="rounded-xl border border-nyay-border bg-nyay-surface px-4 py-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-nyay-muted">
+            Total matters
+          </p>
+          <p className="mt-1 text-xl font-semibold text-nyay-trust dark:text-foreground">
+            {linkedMatters.length}
+          </p>
+        </div>
+        <div className="rounded-xl border border-nyay-border bg-nyay-surface px-4 py-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-nyay-muted">
+            Active
+          </p>
+          <p className="mt-1 text-xl font-semibold text-nyay-trust dark:text-foreground">
+            {linkedMatters.filter((m) => m.status !== "closed").length}
+          </p>
+        </div>
+        <div className="rounded-xl border border-nyay-border bg-nyay-surface px-4 py-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-nyay-muted">
+            Open reminders
+          </p>
+          <p className="mt-1 text-xl font-semibold text-nyay-trust dark:text-foreground">
+            {workspace.reminders.filter((r) => !r.done).length}
+          </p>
+        </div>
+        <div className="rounded-xl border border-nyay-border bg-nyay-surface px-4 py-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-nyay-muted">
+            Meetings logged
+          </p>
+          <p className="mt-1 text-xl font-semibold text-nyay-trust dark:text-foreground">
+            {workspace.meetings.length}
+          </p>
+        </div>
+      </section>
+
+      <section className="mt-6 grid gap-4 xl:grid-cols-2">
+        <div className="space-y-4">
+          <div className="rounded-xl border border-nyay-border bg-nyay-surface p-4 nyay-card-shadow">
+            <h2 className="text-base font-semibold text-nyay-trust dark:text-foreground">
+              Special client notes
+            </h2>
+            <p className="mt-1 text-xs text-nyay-muted">
+              Important relationship context, preferences, or sensitivity flags.
+            </p>
+            <textarea
+              value={workspace.specialNotes}
+              onChange={(e) => saveTextField("specialNotes", e.target.value)}
+              rows={4}
+              placeholder="e.g., prefers post-lunch calls, priority for urgent injunction updates..."
+              className="mt-3 w-full resize-y rounded-lg border border-nyay-border bg-nyay-canvas px-3 py-2 text-sm text-nyay-trust focus:border-nyay-trust-mid focus:outline-none focus:ring-2 focus:ring-nyay-authority/30 dark:text-foreground"
+            />
+          </div>
+          <div className="rounded-xl border border-nyay-border bg-nyay-surface p-4 nyay-card-shadow">
+            <h2 className="text-base font-semibold text-nyay-trust dark:text-foreground">
+              Consultation and advice log
+            </h2>
+            <textarea
+              value={workspace.consultationNotes}
+              onChange={(e) => saveTextField("consultationNotes", e.target.value)}
+              rows={4}
+              placeholder="Consultation meeting notes..."
+              className="mt-3 w-full resize-y rounded-lg border border-nyay-border bg-nyay-canvas px-3 py-2 text-sm text-nyay-trust focus:border-nyay-trust-mid focus:outline-none focus:ring-2 focus:ring-nyay-authority/30 dark:text-foreground"
+            />
+            <textarea
+              value={workspace.adviceLog}
+              onChange={(e) => saveTextField("adviceLog", e.target.value)}
+              rows={4}
+              placeholder="Advice given to client..."
+              className="mt-3 w-full resize-y rounded-lg border border-nyay-border bg-nyay-canvas px-3 py-2 text-sm text-nyay-trust focus:border-nyay-trust-mid focus:outline-none focus:ring-2 focus:ring-nyay-authority/30 dark:text-foreground"
+            />
+          </div>
+          <div className="rounded-xl border border-nyay-border bg-nyay-surface p-4 nyay-card-shadow">
+            <h2 className="text-base font-semibold text-nyay-trust dark:text-foreground">
+              Client documents and case file summary
+            </h2>
+            <textarea
+              value={workspace.documentsSummary}
+              onChange={(e) => saveTextField("documentsSummary", e.target.value)}
+              rows={4}
+              placeholder="Track received documents, pending files, affidavit sets, IDs, and correspondence."
+              className="mt-3 w-full resize-y rounded-lg border border-nyay-border bg-nyay-canvas px-3 py-2 text-sm text-nyay-trust focus:border-nyay-trust-mid focus:outline-none focus:ring-2 focus:ring-nyay-authority/30 dark:text-foreground"
+            />
+          </div>
+        </div>
+        <div className="space-y-4">
+          <div className="rounded-xl border border-nyay-border bg-nyay-surface p-4 nyay-card-shadow">
+            <h2 className="text-base font-semibold text-nyay-trust dark:text-foreground">
+              Reminders
+            </h2>
+            <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+              <input
+                value={reminderTitle}
+                onChange={(e) => setReminderTitle(e.target.value)}
+                placeholder="Reminder title"
+                className="w-full rounded-lg border border-nyay-border bg-nyay-canvas px-3 py-2 text-sm text-nyay-trust focus:border-nyay-trust-mid focus:outline-none focus:ring-2 focus:ring-nyay-authority/30 dark:text-foreground"
+              />
+              <input
+                value={reminderDate}
+                onChange={(e) => setReminderDate(e.target.value)}
+                placeholder="Due date / hearing date"
+                className="w-full rounded-lg border border-nyay-border bg-nyay-canvas px-3 py-2 text-sm text-nyay-trust focus:border-nyay-trust-mid focus:outline-none focus:ring-2 focus:ring-nyay-authority/30 dark:text-foreground"
+              />
+              <button
+                type="button"
+                onClick={addReminder}
+                className="rounded-lg bg-nyay-trust px-3 py-2 text-xs font-semibold text-white hover:bg-nyay-trust-mid"
+              >
+                Add
+              </button>
+            </div>
+            <ul className="mt-3 space-y-2">
+              {workspace.reminders.length === 0 ? (
+                <li className="text-xs text-nyay-muted">No reminders yet.</li>
+              ) : (
+                workspace.reminders.map((r) => (
+                  <li
+                    key={r.id}
+                    className="flex items-center justify-between gap-2 rounded-lg border border-nyay-border px-3 py-2 text-sm"
+                  >
+                    <div>
+                      <p
+                        className={`font-medium ${
+                          r.done
+                            ? "text-nyay-muted line-through"
+                            : "text-nyay-trust dark:text-foreground"
+                        }`}
+                      >
+                        {r.title}
+                      </p>
+                      <p className="text-xs text-nyay-muted">{r.dueOn}</p>
+                    </div>
+                    <div className="flex gap-1">
+                      <button
+                        type="button"
+                        onClick={() => toggleReminder(r.id)}
+                        className="rounded-md border border-nyay-border px-2 py-1 text-xs text-nyay-trust-mid dark:text-foreground"
+                      >
+                        {r.done ? "Reopen" : "Done"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => deleteReminder(r.id)}
+                        className="rounded-md border border-nyay-border px-2 py-1 text-xs text-nyay-trust-mid dark:text-foreground"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </li>
+                ))
+              )}
+            </ul>
+          </div>
+
+          <div className="rounded-xl border border-nyay-border bg-nyay-surface p-4 nyay-card-shadow">
+            <h2 className="text-base font-semibold text-nyay-trust dark:text-foreground">
+              Meetings and consultations
+            </h2>
+            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+              <input
+                value={meetingTitle}
+                onChange={(e) => setMeetingTitle(e.target.value)}
+                placeholder="Meeting agenda/title"
+                className="rounded-lg border border-nyay-border bg-nyay-canvas px-3 py-2 text-sm text-nyay-trust focus:border-nyay-trust-mid focus:outline-none focus:ring-2 focus:ring-nyay-authority/30 dark:text-foreground"
+              />
+              <input
+                value={meetingWhen}
+                onChange={(e) => setMeetingWhen(e.target.value)}
+                placeholder="Date and time"
+                className="rounded-lg border border-nyay-border bg-nyay-canvas px-3 py-2 text-sm text-nyay-trust focus:border-nyay-trust-mid focus:outline-none focus:ring-2 focus:ring-nyay-authority/30 dark:text-foreground"
+              />
+              <select
+                value={meetingMode}
+                onChange={(e) => setMeetingMode(e.target.value as ClientMeeting["mode"])}
+                className="rounded-lg border border-nyay-border bg-nyay-canvas px-3 py-2 text-sm text-nyay-trust focus:border-nyay-trust-mid focus:outline-none focus:ring-2 focus:ring-nyay-authority/30 dark:text-foreground"
+              >
+                <option value="office">Office</option>
+                <option value="court">Court</option>
+                <option value="call">Call</option>
+                <option value="video">Video</option>
+              </select>
+              <button
+                type="button"
+                onClick={addMeeting}
+                className="rounded-lg bg-nyay-trust px-3 py-2 text-xs font-semibold text-white hover:bg-nyay-trust-mid"
+              >
+                Add meeting
+              </button>
+            </div>
+            <ul className="mt-3 space-y-2">
+              {workspace.meetings.length === 0 ? (
+                <li className="text-xs text-nyay-muted">No meetings logged yet.</li>
+              ) : (
+                workspace.meetings.map((m) => (
+                  <li
+                    key={m.id}
+                    className="rounded-lg border border-nyay-border px-3 py-2 text-sm text-nyay-trust dark:text-foreground"
+                  >
+                    <p className="font-medium">{m.title}</p>
+                    <p className="text-xs text-nyay-muted">
+                      {m.when} • {m.mode}
+                    </p>
+                  </li>
+                ))
+              )}
+            </ul>
+          </div>
+        </div>
+      </section>
+
       <div className="mt-6">
         <EntityPracticeNotes entity="client" entityId={clientId} />
       </div>
@@ -200,7 +483,7 @@ export default function ClientDetailPage() {
             className="mb-3 flex items-center gap-2 text-lg font-semibold text-nyay-trust dark:text-foreground"
           >
             <span className="h-1 w-8 rounded-full bg-nyay-authority" aria-hidden />
-            Linked matters
+            Linked matters (case-wise view)
           </h2>
           {linkedMatters.length === 0 ? (
             <div className="rounded-xl border border-dashed border-nyay-border bg-nyay-surface px-5 py-7 text-center">
@@ -210,11 +493,11 @@ export default function ClientDetailPage() {
               </p>
             </div>
           ) : (
-            <ul className="space-y-2">
+            <ul className="grid gap-3 sm:grid-cols-2">
               {linkedMatters.map((m) => (
                 <li
                   key={m.id}
-                  className="flex flex-wrap items-center justify-between gap-2.5 rounded-xl border border-nyay-border bg-nyay-surface px-3 py-2.5 nyay-card-shadow"
+                  className="rounded-xl border border-nyay-border bg-nyay-surface p-3 nyay-card-shadow"
                 >
                   <div className="min-w-0">
                     <Link
@@ -225,20 +508,35 @@ export default function ClientDetailPage() {
                     </Link>
                     <p className="mt-0.5 font-medium text-nyay-trust dark:text-foreground">{m.title}</p>
                     <p className="mt-1 text-xs text-nyay-muted">
+                      {m.caseType.toUpperCase()} • {m.court}
+                    </p>
+                    <p className="mt-1 text-xs text-nyay-muted">
+                      Stage: {m.stage}
+                      {m.next ? ` • Next: ${m.next}` : ""}
+                    </p>
+                    <p className="mt-1 text-xs text-nyay-muted">
                       {unlinkable(m)
                         ? "Linked in this browser — you can remove the link."
                         : "From practice records."}
                     </p>
                   </div>
-                  {unlinkable(m) ? (
-                    <button
-                      type="button"
-                      onClick={() => handleUnlink(m.id)}
-                      className="shrink-0 rounded-lg border border-nyay-border px-3 py-1.5 text-xs font-semibold text-nyay-trust-mid transition-colors hover:bg-nyay-canvas dark:text-foreground dark:hover:bg-nyay-trust/10"
+                  <div className="mt-3 flex gap-2">
+                    <Link
+                      href={routes.case(m.id)}
+                      className="rounded-lg bg-nyay-trust px-3 py-1.5 text-xs font-semibold text-white hover:bg-nyay-trust-mid"
                     >
-                      Remove link
-                    </button>
-                  ) : null}
+                      Open case
+                    </Link>
+                    {unlinkable(m) ? (
+                      <button
+                        type="button"
+                        onClick={() => handleUnlink(m.id)}
+                        className="shrink-0 rounded-lg border border-nyay-border px-3 py-1.5 text-xs font-semibold text-nyay-trust-mid transition-colors hover:bg-nyay-canvas dark:text-foreground dark:hover:bg-nyay-trust/10"
+                      >
+                        Remove link
+                      </button>
+                    ) : null}
+                  </div>
                 </li>
               ))}
             </ul>

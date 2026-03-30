@@ -8,6 +8,7 @@ const SEGMENT_LABELS: Record<string, string> = {
   calendar: "Calendar",
   cases: "Cases",
   clients: "Clients",
+  documents: "Documents",
 };
 
 function segmentLabel(segment: string, parent?: string): string {
