@@ -1,6 +1,8 @@
 type AuthHeroPanelProps = {
   title: string;
   subtitle: string;
+  /** Full-bleed image from `public/` (e.g. `/login_image.png`). Replaces illustration and title block. */
+  imageSrc?: string;
 };
 
 /** Court & practice illustration — `public/icons/auth-case-practice-illustration.svg`. */
@@ -15,7 +17,24 @@ function CasePracticeIllustration({ className = "" }: { className?: string }) {
   );
 }
 
-export function AuthHeroPanel({ title, subtitle }: AuthHeroPanelProps) {
+export function AuthHeroPanel({
+  title,
+  subtitle,
+  imageSrc,
+}: AuthHeroPanelProps) {
+  if (imageSrc) {
+    return (
+      <div className="relative min-h-[200px] overflow-hidden rounded-2xl border border-white/10 bg-nyay-canvas/40 shadow-[var(--nyay-elevate)] sm:min-h-[260px] lg:h-[min(62vh,620px)] lg:min-h-0 lg:flex-1 xl:h-[min(66vh,680px)]">
+        <img
+          src={imageSrc}
+          alt=""
+          className="h-full min-h-[200px] w-full object-contain object-center sm:min-h-[260px]"
+          aria-hidden
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="relative flex min-h-[200px] flex-col justify-end overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-nyay-trust via-[#15365c] to-[#0c1f36] p-5 shadow-[var(--nyay-elevate)] sm:min-h-[260px] sm:p-6 lg:min-h-0 lg:flex-1 lg:justify-between lg:p-8 dark:from-[#0e1f38] dark:via-[#152f52] dark:to-[#0a1628]">
       <div

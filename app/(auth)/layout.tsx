@@ -5,7 +5,7 @@ export default function AuthLayout({
 }>) {
   return (
     <div className="nyay-dashboard-shell flex min-h-full flex-1 flex-col">
-      <div className="flex flex-1 flex-col py-4 nyay-page-x sm:py-5 lg:py-6">
+      <div className="flex flex-1 flex-col pt-1.5 pb-3 nyay-page-x sm:pt-2 sm:pb-4 lg:pt-2 lg:pb-5">
         {children}
       </div>
     </div>

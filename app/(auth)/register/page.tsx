@@ -10,6 +10,7 @@ export default function RegisterPage() {
   return (
     <AuthSplitPage
       logoHref="/register"
+      heroImage="/signup_image.png"
       heroTitle="Start strong from day one"
       heroSubtitle="Create your Nyay Space profile and keep cases, deadlines, and client work organized from the first matter you open."
     >
