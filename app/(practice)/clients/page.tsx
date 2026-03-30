@@ -14,7 +14,6 @@ import {
 } from "@/lib/cases";
 import { effectiveClientId } from "@/lib/matter-client-overrides";
 import { useNyayStorage } from "@/lib/use-nyay-storage";
-import { PracticeListingKicker } from "@/components/practice/listing-kicker";
 import { routes } from "@/lib/routes";
 
 function newClientId(): string {
@@ -58,26 +57,24 @@ export default function ClientsPage() {
 
   return (
     <div className="min-h-full font-sans text-foreground">
-      <div className="mx-auto max-w-7xl nyay-page-y">
-        <header className="mb-5 flex flex-col gap-3 border-b border-nyay-border pb-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <PracticeListingKicker section="Clients" />
-            <h1 className="mt-2 text-2xl font-semibold tracking-tight text-nyay-trust sm:text-3xl dark:text-foreground">
-              Client management
-            </h1>
-            <p className="mt-2 max-w-2xl text-sm text-nyay-muted">
-              Track clients and open a profile to link matters. New clients are stored in this
-              browser for the demo.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={openAdd}
-            className="shrink-0 rounded-lg bg-nyay-trust px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-nyay-trust/20 transition-all hover:bg-nyay-trust-mid focus:outline-none focus-visible:ring-2 focus-visible:ring-nyay-authority focus-visible:ring-offset-2 focus-visible:ring-offset-nyay-canvas dark:bg-nyay-trust-mid dark:hover:bg-nyay-trust-soft dark:focus-visible:ring-offset-[#0a1628]"
-          >
-            Add client
-          </button>
-        </header>
+      <header className="mb-5 flex flex-col gap-3 border-b border-nyay-border pb-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-nyay-trust sm:text-3xl dark:text-foreground">
+            Client management
+          </h1>
+          <p className="mt-2 max-w-2xl text-sm text-nyay-muted">
+            Track clients and open a profile to link matters. New clients are stored in this
+            browser for the demo.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={openAdd}
+          className="shrink-0 rounded-lg bg-nyay-trust px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-nyay-trust/20 transition-all hover:bg-nyay-trust-mid focus:outline-none focus-visible:ring-2 focus-visible:ring-nyay-authority focus-visible:ring-offset-2 focus-visible:ring-offset-nyay-canvas dark:bg-nyay-trust-mid dark:hover:bg-nyay-trust-soft dark:focus-visible:ring-offset-[#0a1628]"
+        >
+          Add client
+        </button>
+      </header>
 
         <section aria-labelledby="clients-list-heading">
           <h2
@@ -166,8 +163,6 @@ export default function ClientsPage() {
             </div>
           </div>
         </section>
-      </div>
-
       <ClientFormModal
         open={modalOpen}
         onOpenChange={onModalOpenChange}

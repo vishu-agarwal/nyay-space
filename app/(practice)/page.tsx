@@ -184,18 +184,17 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-full font-sans text-foreground">
-      <div className="mx-auto max-w-7xl nyay-page-y">
-        <header className="mb-5 border-b border-nyay-border pb-4">
-          <p className="text-sm font-semibold tracking-wide text-nyay-authority uppercase">
-            Workspace
-          </p>
-          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-nyay-trust sm:text-3xl dark:text-foreground">
-            Dashboard
-          </h1>
-          <p className="mt-2 max-w-2xl text-sm text-nyay-muted">
-            Hearings, deadlines, and active matters at a glance.
-          </p>
-        </header>
+      <header className="mb-5 border-b border-nyay-border pb-4">
+        <p className="text-sm font-semibold tracking-wide text-nyay-authority uppercase">
+          Workspace
+        </p>
+        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-nyay-trust sm:text-3xl dark:text-foreground">
+          Dashboard
+        </h1>
+        <p className="mt-2 max-w-2xl text-sm text-nyay-muted">
+          Hearings, deadlines, and active matters at a glance.
+        </p>
+      </header>
 
         <section aria-labelledby="quick-stats-heading" className="mb-6">
           <h2
@@ -428,7 +427,6 @@ export default function DashboardPage() {
             </div>
           </div>
         </section>
-      </div>
     </div>
   );
 }

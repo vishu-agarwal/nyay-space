@@ -1,7 +1,5 @@
-import Link from "next/link";
 import type { Metadata } from "next";
 import { getCaseDetailForId } from "@/lib/cases";
-import { routes } from "@/lib/routes";
 import { CaseClientBlock } from "./case-client-block";
 import { CaseDetailClient } from "@/components/case-management/case-detail-client";
 import { DocumentsPanel } from "@/components/case-management/documents-panel";
@@ -32,29 +30,8 @@ export default async function CaseDetailPage({ params }: PageProps) {
 
   return (
     <div className="min-h-full font-sans text-foreground">
-      <div className="mx-auto max-w-7xl nyay-page-y">
-        <nav className="mb-4 text-sm text-nyay-muted" aria-label="Breadcrumb">
-          <Link
-            href={routes.home}
-            className="font-semibold text-nyay-authority transition-colors hover:text-nyay-authority-rich"
-          >
-            Nyay Space
-          </Link>
-          <span className="text-nyay-muted/70"> / </span>
-          <Link
-            href={routes.cases}
-            className="font-medium text-nyay-trust-mid transition-colors hover:text-nyay-trust dark:text-foreground/90"
-          >
-            Cases
-          </Link>
-          <span className="text-nyay-muted/70"> / </span>
-          <span className="font-mono text-xs text-nyay-trust dark:text-foreground">
-            {matter?.id ?? id}
-          </span>
-        </nav>
-
-        {/* Case info — trust blue + gold (authority) accents */}
-        <header className="relative overflow-hidden rounded-2xl border border-white/15 bg-nyay-trust-soft nyay-hero-shadow dark:border-white/10 dark:bg-nyay-trust-mid">
+      {/* Case info — trust blue + gold (authority) accents */}
+      <header className="relative overflow-hidden rounded-2xl border border-white/15 bg-nyay-trust-soft nyay-hero-shadow dark:border-white/10 dark:bg-nyay-trust-mid">
           <div
             className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-nyay-authority/15 blur-3xl"
             aria-hidden
@@ -162,9 +139,9 @@ export default async function CaseDetailPage({ params }: PageProps) {
               ) : null}
             </dl>
           </div>
-        </header>
+      </header>
 
-        <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem] xl:grid-cols-[minmax(0,1fr)_22rem]">
+      <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem] xl:grid-cols-[minmax(0,1fr)_22rem]">
           {/* Timeline — main */}
           <main aria-label="Case timeline and history">
             <CaseDetailClient caseId={id} seedMatter={matter} seedExtra={extra} />
@@ -179,7 +156,6 @@ export default async function CaseDetailPage({ params }: PageProps) {
               <DocumentsPanel documents={extra?.documents ?? []} />
             </div>
           </aside>
-        </div>
       </div>
     </div>
   );

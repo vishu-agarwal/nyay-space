@@ -8,7 +8,6 @@ import { effectiveClientId } from "@/lib/matter-client-overrides";
 import type { CaseStatus, CaseType } from "@/lib/cases";
 import { useAdvocateCaseList } from "@/lib/use-case-management-store";
 import { useNyayStorage } from "@/lib/use-nyay-storage";
-import { PracticeListingKicker } from "@/components/practice/listing-kicker";
 import { routes } from "@/lib/routes";
 import { FilterOptionsMenu } from "@/components/practice/filter-options-menu";
 
@@ -43,16 +42,14 @@ export default function CasesListingPage() {
 
   return (
     <div className="min-h-full font-sans text-foreground">
-      <div className="mx-auto max-w-7xl nyay-page-y">
-        <header className="mb-5 border-b border-nyay-border pb-4">
-          <PracticeListingKicker section="Cases" />
-          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-nyay-trust sm:text-3xl dark:text-foreground">
-            Case listing
-          </h1>
-          <p className="mt-2 max-w-2xl text-sm text-nyay-muted">
-            Search matters, filter by status, and switch between list and card views.
-          </p>
-        </header>
+      <header className="mb-5 border-b border-nyay-border pb-4">
+        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-nyay-trust sm:text-3xl dark:text-foreground">
+          Case listing
+        </h1>
+        <p className="mt-2 max-w-2xl text-sm text-nyay-muted">
+          Search matters, filter by status, and switch between list and card views.
+        </p>
+      </header>
 
         <div
           className="mb-4 flex flex-col gap-3 rounded-xl border border-nyay-border bg-nyay-surface p-3 nyay-card-shadow sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
@@ -286,7 +283,6 @@ export default function CasesListingPage() {
             ))}
           </ul>
         )}
-      </div>
     </div>
   );
 }

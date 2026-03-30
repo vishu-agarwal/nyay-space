@@ -107,26 +107,7 @@ export default function ClientDetailPage() {
 
   return (
     <div className="min-h-full font-sans text-foreground">
-      <div className="mx-auto max-w-7xl nyay-page-y">
-        <nav className="mb-4 text-sm text-nyay-muted" aria-label="Breadcrumb">
-          <Link
-            href={routes.home}
-            className="font-semibold text-nyay-authority transition-colors hover:text-nyay-authority-rich"
-          >
-            Nyay Space
-          </Link>
-          <span className="text-nyay-muted/70"> / </span>
-          <Link
-            href={routes.clients}
-            className="font-medium text-nyay-trust-mid transition-colors hover:text-nyay-trust dark:text-foreground/90"
-          >
-            Clients
-          </Link>
-          <span className="text-nyay-muted/70"> / </span>
-          <span className="text-nyay-trust dark:text-foreground">{client.name}</span>
-        </nav>
-
-        <header className="relative overflow-hidden rounded-2xl border border-white/15 bg-nyay-trust-soft nyay-hero-shadow dark:border-white/10 dark:bg-nyay-trust-mid">
+      <header className="relative overflow-hidden rounded-2xl border border-white/15 bg-nyay-trust-soft nyay-hero-shadow dark:border-white/10 dark:bg-nyay-trust-mid">
           <div
             className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-nyay-authority/15 blur-3xl"
             aria-hidden
@@ -207,13 +188,13 @@ export default function ClientDetailPage() {
               </div>
             ) : null}
           </div>
-        </header>
+      </header>
 
-        <div className="mt-6">
-          <EntityPracticeNotes entity="client" entityId={clientId} />
-        </div>
+      <div className="mt-6">
+        <EntityPracticeNotes entity="client" entityId={clientId} />
+      </div>
 
-        <section aria-labelledby="matters-heading" className="mt-6">
+      <section aria-labelledby="matters-heading" className="mt-6">
           <h2
             id="matters-heading"
             className="mb-3 flex items-center gap-2 text-lg font-semibold text-nyay-trust dark:text-foreground"
@@ -262,12 +243,12 @@ export default function ClientDetailPage() {
               ))}
             </ul>
           )}
-        </section>
+      </section>
 
-        <section
-          aria-labelledby="link-matter-heading"
-          className="mt-6 rounded-xl border border-nyay-border bg-nyay-surface p-4 nyay-card-shadow"
-        >
+      <section
+        aria-labelledby="link-matter-heading"
+        className="mt-6 rounded-xl border border-nyay-border bg-nyay-surface p-4 nyay-card-shadow"
+      >
           <h2
             id="link-matter-heading"
             className="text-base font-semibold text-nyay-trust dark:text-foreground"
@@ -305,8 +286,7 @@ export default function ClientDetailPage() {
               Link to client
             </button>
           </div>
-        </section>
-      </div>
+      </section>
 
       <ClientFormModal
         open={editOpen}
