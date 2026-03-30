@@ -66,9 +66,9 @@ export function PracticeQuickAddFab() {
             href={routes.cases}
             role="menuitem"
             onClick={closeMenu}
-            className="flex min-h-11 min-w-42 items-center gap-2 rounded-xl border border-nyay-border bg-nyay-surface px-4 py-2.5 text-sm font-semibold text-nyay-trust shadow-md nyay-card-shadow transition-colors hover:bg-nyay-canvas focus:outline-none focus-visible:ring-2 focus-visible:ring-nyay-authority focus-visible:ring-offset-2 focus-visible:ring-offset-nyay-canvas dark:border-white/12 dark:bg-[#122238] dark:text-foreground dark:hover:bg-white/5 dark:focus-visible:ring-offset-[#0a1628]"
+            className="flex min-h-10 min-w-36 items-center gap-2 rounded-xl border border-nyay-border bg-nyay-surface px-3 py-2 text-sm font-semibold text-nyay-trust shadow-md nyay-card-shadow transition-colors hover:bg-nyay-canvas focus:outline-none focus-visible:ring-2 focus-visible:ring-nyay-authority focus-visible:ring-offset-2 focus-visible:ring-offset-nyay-canvas dark:border-white/12 dark:bg-[#122238] dark:text-foreground dark:hover:bg-white/5 dark:focus-visible:ring-offset-[#0a1628]"
           >
-            <MaskIcon name="briefcase" className="h-4 w-4 shrink-0 text-nyay-authority" />
+            <MaskIcon name="briefcase" className="h-3.5 w-3.5 shrink-0 text-nyay-authority" />
             Add case
           </Link>
           <button
@@ -78,9 +78,9 @@ export function PracticeQuickAddFab() {
               closeMenu();
               setClientModalOpen(true);
             }}
-            className="flex min-h-11 min-w-42 items-center gap-2 rounded-xl border border-nyay-border bg-nyay-surface px-4 py-2.5 text-sm font-semibold text-nyay-trust shadow-md nyay-card-shadow transition-colors hover:bg-nyay-canvas focus:outline-none focus-visible:ring-2 focus-visible:ring-nyay-authority focus-visible:ring-offset-2 focus-visible:ring-offset-nyay-canvas dark:border-white/12 dark:bg-[#122238] dark:text-foreground dark:hover:bg-white/5 dark:focus-visible:ring-offset-[#0a1628]"
+            className="flex min-h-10 min-w-36 items-center gap-2 rounded-xl border border-nyay-border bg-nyay-surface px-3 py-2 text-sm font-semibold text-nyay-trust shadow-md nyay-card-shadow transition-colors hover:bg-nyay-canvas focus:outline-none focus-visible:ring-2 focus-visible:ring-nyay-authority focus-visible:ring-offset-2 focus-visible:ring-offset-nyay-canvas dark:border-white/12 dark:bg-[#122238] dark:text-foreground dark:hover:bg-white/5 dark:focus-visible:ring-offset-[#0a1628]"
           >
-            <MaskIcon name="user-circle" className="h-4 w-4 shrink-0 text-nyay-authority" />
+            <MaskIcon name="user-circle" className="h-3.5 w-3.5 shrink-0 text-nyay-authority" />
             Add client
           </button>
           <button
@@ -90,9 +90,9 @@ export function PracticeQuickAddFab() {
               closeMenu();
               setDocPickerOpen(true);
             }}
-            className="flex min-h-11 min-w-42 items-center gap-2 rounded-xl border border-nyay-border bg-nyay-surface px-4 py-2.5 text-sm font-semibold text-nyay-trust shadow-md nyay-card-shadow transition-colors hover:bg-nyay-canvas focus:outline-none focus-visible:ring-2 focus-visible:ring-nyay-authority focus-visible:ring-offset-2 focus-visible:ring-offset-nyay-canvas dark:border-white/12 dark:bg-[#122238] dark:text-foreground dark:hover:bg-white/5 dark:focus-visible:ring-offset-[#0a1628]"
+            className="flex min-h-10 min-w-36 items-center gap-2 rounded-xl border border-nyay-border bg-nyay-surface px-3 py-2 text-sm font-semibold text-nyay-trust shadow-md nyay-card-shadow transition-colors hover:bg-nyay-canvas focus:outline-none focus-visible:ring-2 focus-visible:ring-nyay-authority focus-visible:ring-offset-2 focus-visible:ring-offset-nyay-canvas dark:border-white/12 dark:bg-[#122238] dark:text-foreground dark:hover:bg-white/5 dark:focus-visible:ring-offset-[#0a1628]"
           >
-            <MaskIcon name="document-folded" className="h-4 w-4 shrink-0 text-nyay-authority" />
+            <MaskIcon name="document-folded" className="h-3.5 w-3.5 shrink-0 text-nyay-authority" />
             Add document
           </button>
         </div>
@@ -103,12 +103,12 @@ export function PracticeQuickAddFab() {
           aria-haspopup="menu"
           aria-controls={menuId}
           onClick={() => setMenuOpen((o) => !o)}
-          className="pointer-events-auto flex h-14 w-14 items-center justify-center rounded-full bg-nyay-trust text-white shadow-lg shadow-nyay-trust/30 transition-transform hover:bg-nyay-trust-mid focus:outline-none focus-visible:ring-2 focus-visible:ring-nyay-authority focus-visible:ring-offset-2 focus-visible:ring-offset-nyay-canvas dark:bg-nyay-trust-mid dark:hover:bg-nyay-trust-soft dark:focus-visible:ring-offset-[#0a1628]"
+          className="pointer-events-auto flex h-12 w-12 items-center justify-center rounded-full bg-nyay-trust text-white shadow-lg shadow-nyay-trust/30 transition-transform hover:bg-nyay-trust-mid focus:outline-none focus-visible:ring-2 focus-visible:ring-nyay-authority focus-visible:ring-offset-2 focus-visible:ring-offset-nyay-canvas dark:bg-nyay-trust-mid dark:hover:bg-nyay-trust-soft dark:focus-visible:ring-offset-[#0a1628]"
         >
           <span className="sr-only">{menuOpen ? "Close quick add" : "Quick add"}</span>
           <MaskIcon
             name="plus"
-            className={`h-7 w-7 transition-transform duration-200 ${menuOpen ? "rotate-45" : ""}`}
+            className={`h-6 w-6 transition-transform duration-200 ${menuOpen ? "rotate-45" : ""}`}
           />
         </button>
       </div>
