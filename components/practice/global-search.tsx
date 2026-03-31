@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { createPortal } from "react-dom";
 import {
   useCallback,
   useEffect,
@@ -173,100 +174,103 @@ export function GlobalSearch() {
         <MaskIcon name="search" className="h-5 w-5" />
       </button>
 
-      {open ? (
-        <div
-          className="fixed inset-0 z-100 flex items-start justify-center bg-nyay-trust/40 p-4 pt-[min(12vh,6rem)] backdrop-blur-sm dark:bg-black/60"
-          role="presentation"
-          onMouseDown={(e) => {
-            if (e.target === e.currentTarget) setOpen(false);
-          }}
-        >
-          <div
-            id={dialogId}
-            role="dialog"
-            aria-modal="true"
-            aria-label="Global search"
-            className="flex max-h-[min(70vh,32rem)] w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-nyay-border bg-nyay-surface shadow-xl dark:border-white/10 dark:bg-[#122238]"
-            onMouseDown={(e) => e.stopPropagation()}
-          >
-            <div className="border-b border-nyay-border p-3 dark:border-white/10">
-              <label className="relative block">
-                <span className="sr-only">Search</span>
-                <MaskIcon
-                  name="search"
-                  className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-nyay-muted"
-                />
-                <input
-                  ref={inputRef}
-                  type="search"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Case, client, or document…"
-                  autoComplete="off"
-                  className="w-full rounded-xl border border-nyay-border bg-nyay-canvas py-3 pl-11 pr-3 text-sm text-nyay-trust placeholder:text-nyay-muted/70 focus:border-nyay-trust-mid focus:outline-none focus:ring-2 focus:ring-nyay-authority/30 dark:border-white/10 dark:bg-nyay-trust/20 dark:text-foreground"
-                />
-              </label>
-            </div>
-
-            <ul
-              ref={listRef}
-              className="min-h-0 flex-1 overflow-y-auto p-2"
-              role="listbox"
-              aria-label="Search results"
+      {open && typeof document !== "undefined"
+        ? createPortal(
+            <div
+              className="fixed inset-0 z-120 flex items-start justify-center bg-nyay-trust/40 p-4 pt-[min(12vh,6rem)] backdrop-blur-sm dark:bg-black/60"
+              role="presentation"
+              onMouseDown={(e) => {
+                if (e.target === e.currentTarget) setOpen(false);
+              }}
             >
-              {query.trim() === "" ? (
-                <li className="px-3 py-8 text-center text-sm text-nyay-muted">
-                  Type to search across cases, clients, and documents.
-                </li>
-              ) : hits.length === 0 ? (
-                <li className="px-3 py-8 text-center text-sm text-nyay-muted">
-                  No matches. Try another keyword.
-                </li>
-              ) : (
-                displayRows.map((row) => {
-                  if (row.type === "heading") {
-                    return (
-                      <li
-                        key={`h-${row.kind}`}
-                        className="px-3 pb-1 pt-3 text-xs font-semibold tracking-wide text-nyay-muted uppercase first:pt-1"
-                        role="presentation"
-                      >
-                        {KIND_LABEL[row.kind]}
-                      </li>
-                    );
-                  }
-                  const selected = row.selectableIndex === active;
-                  return (
-                    <li key={`${row.hit.kind}-${row.hit.href}`} role="presentation">
-                      <Link
-                        href={row.hit.href}
-                        data-select-index={row.selectableIndex}
-                        onClick={() => setOpen(false)}
-                        onMouseEnter={() => setActive(row.selectableIndex)}
-                        className={[
-                          "flex w-full flex-col rounded-lg px-3 py-2.5 text-left transition-colors",
-                          selected
-                            ? "bg-nyay-authority-soft ring-1 ring-nyay-authority/35 dark:bg-nyay-authority/15 dark:ring-nyay-authority/25"
-                            : "hover:bg-nyay-canvas dark:hover:bg-white/5",
-                        ].join(" ")}
-                        role="option"
-                        aria-selected={selected}
-                      >
-                        <span className="truncate text-sm font-medium text-nyay-trust dark:text-foreground">
-                          {row.hit.title}
-                        </span>
-                        <span className="mt-0.5 truncate text-xs text-nyay-muted">
-                          {row.hit.subtitle}
-                        </span>
-                      </Link>
+              <div
+                id={dialogId}
+                role="dialog"
+                aria-modal="true"
+                aria-label="Global search"
+                className="flex max-h-[min(70vh,32rem)] w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-nyay-border bg-nyay-surface shadow-xl dark:border-white/10 dark:bg-[#122238]"
+                onMouseDown={(e) => e.stopPropagation()}
+              >
+                <div className="border-b border-nyay-border p-3 dark:border-white/10">
+                  <label className="relative block">
+                    <span className="sr-only">Search</span>
+                    <MaskIcon
+                      name="search"
+                      className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-nyay-muted"
+                    />
+                    <input
+                      ref={inputRef}
+                      type="search"
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder="Case, client, or document…"
+                      autoComplete="off"
+                      className="w-full rounded-xl border border-nyay-border bg-nyay-canvas py-3 pl-11 pr-3 text-sm text-nyay-trust placeholder:text-nyay-muted/70 focus:border-nyay-trust-mid focus:outline-none focus:ring-2 focus:ring-nyay-authority/30 dark:border-white/10 dark:bg-nyay-trust/20 dark:text-foreground"
+                    />
+                  </label>
+                </div>
+
+                <ul
+                  ref={listRef}
+                  className="min-h-0 flex-1 overflow-y-auto p-2"
+                  role="listbox"
+                  aria-label="Search results"
+                >
+                  {query.trim() === "" ? (
+                    <li className="px-3 py-8 text-center text-sm text-nyay-muted">
+                      Type to search across cases, clients, and documents.
                     </li>
-                  );
-                })
-              )}
-            </ul>
-          </div>
-        </div>
-      ) : null}
+                  ) : hits.length === 0 ? (
+                    <li className="px-3 py-8 text-center text-sm text-nyay-muted">
+                      No matches. Try another keyword.
+                    </li>
+                  ) : (
+                    displayRows.map((row) => {
+                      if (row.type === "heading") {
+                        return (
+                          <li
+                            key={`h-${row.kind}`}
+                            className="px-3 pb-1 pt-3 text-xs font-semibold tracking-wide text-nyay-muted uppercase first:pt-1"
+                            role="presentation"
+                          >
+                            {KIND_LABEL[row.kind]}
+                          </li>
+                        );
+                      }
+                      const selected = row.selectableIndex === active;
+                      return (
+                        <li key={`${row.hit.kind}-${row.hit.href}`} role="presentation">
+                          <Link
+                            href={row.hit.href}
+                            data-select-index={row.selectableIndex}
+                            onClick={() => setOpen(false)}
+                            onMouseEnter={() => setActive(row.selectableIndex)}
+                            className={[
+                              "flex w-full flex-col rounded-lg px-3 py-2.5 text-left transition-colors",
+                              selected
+                                ? "bg-nyay-authority-soft ring-1 ring-nyay-authority/35 dark:bg-nyay-authority/15 dark:ring-nyay-authority/25"
+                                : "hover:bg-nyay-canvas dark:hover:bg-white/5",
+                            ].join(" ")}
+                            role="option"
+                            aria-selected={selected}
+                          >
+                            <span className="truncate text-sm font-medium text-nyay-trust dark:text-foreground">
+                              {row.hit.title}
+                            </span>
+                            <span className="mt-0.5 truncate text-xs text-nyay-muted">
+                              {row.hit.subtitle}
+                            </span>
+                          </Link>
+                        </li>
+                      );
+                    })
+                  )}
+                </ul>
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
     </>
   );
 }

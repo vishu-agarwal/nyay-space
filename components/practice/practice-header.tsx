@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { MaskIcon } from "@/components/icons/mask-icon";
 import {
@@ -18,7 +18,6 @@ import { NyayLogoLink } from "@/components/nyay-logo-link";
 import { routes } from "@/lib/routes";
 
 const nav = [
-  { href: routes.home, label: "Home", match: "exact" as const },
   { href: routes.tasks, label: "To-Do", match: "exact" as const },
   { href: routes.calendar, label: "Calendar", match: "prefix" as const },
   { href: routes.cases, label: "Cases", match: "prefix" as const },
@@ -109,6 +108,8 @@ export function PracticeHeader() {
   const [alertNotificationsEnabled, setAlertNotificationsEnabled] = useState(true);
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const [notifiedKeys, setNotifiedKeys] = useState<Set<string>>(() => new Set());
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const alertsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -118,6 +119,25 @@ export function PracticeHeader() {
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [menuOpen]);
+
+  useEffect(() => {
+    if (!menuOpen && !alertsOpen) return;
+    const onPointerDown = (event: MouseEvent | TouchEvent) => {
+      const target = event.target as Node | null;
+      if (menuOpen && target && !mobileMenuRef.current?.contains(target)) {
+        setMenuOpen(false);
+      }
+      if (alertsOpen && target && !alertsRef.current?.contains(target)) {
+        setAlertsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("touchstart", onPointerDown);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("touchstart", onPointerDown);
+    };
+  }, [menuOpen, alertsOpen]);
 
   useEffect(() => {
     const tk = localISODate(new Date());
@@ -183,7 +203,7 @@ export function PracticeHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-nyay-border/90 bg-nyay-surface/90 shadow-[0_1px_0_rgba(201,162,39,0.12)] backdrop-blur-md dark:bg-[color-mix(in_srgb,var(--nyay-surface)_92%,transparent)] dark:shadow-[0_1px_0_rgba(212,184,74,0.1)]">
-      <div className="mx-auto flex h-18 max-w-7xl min-w-0 items-center gap-2 nyay-page-x sm:gap-3">
+      <div className="mx-auto flex h-18 max-w-7xl min-w-0 items-center gap-2 px-2 sm:px-3 lg:px-4">
         <NyayLogoLink className="shrink-0" />
 
         <div className="flex min-w-0 flex-1 justify-end md:justify-start">
@@ -191,19 +211,75 @@ export function PracticeHeader() {
         </div>
 
         <div className="relative flex shrink-0 items-center gap-1 sm:gap-2">
-          <button
-            type="button"
-            onClick={() => setAlertsOpen((o) => !o)}
-            className="relative inline-flex h-10 w-10 items-center justify-center rounded-lg border border-nyay-border text-nyay-trust transition hover:bg-nyay-canvas focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-nyay-authority dark:border-white/15 dark:text-foreground dark:hover:bg-white/5"
-            aria-expanded={alertsOpen}
-            aria-label="Open reminders"
-            title="Reminders"
-          >
-            <MaskIcon name="bell" className="h-5 w-5" />
-            {dueAlerts.length > 0 ? (
-              <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-nyay-authority" />
+          <div ref={alertsRef} className="relative">
+            <button
+              type="button"
+              onClick={() => setAlertsOpen((o) => !o)}
+              className="relative inline-flex h-10 w-10 items-center justify-center rounded-lg border border-nyay-border text-nyay-trust transition hover:bg-nyay-canvas focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-nyay-authority dark:border-white/15 dark:text-foreground dark:hover:bg-white/5"
+              aria-expanded={alertsOpen}
+              aria-label="Open reminders"
+              title="Reminders"
+            >
+              <MaskIcon name="bell" className="h-5 w-5" />
+              {dueAlerts.length > 0 ? (
+                <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-nyay-authority" />
+              ) : null}
+            </button>
+            {alertsOpen ? (
+              <div className="absolute right-0 top-12 z-70 w-[min(24rem,calc(100vw-1rem))] rounded-xl border border-nyay-border bg-nyay-surface p-3 nyay-card-shadow">
+                <div className="mb-2 flex items-center justify-between gap-2">
+                  <p className="text-sm font-semibold text-nyay-trust dark:text-foreground">Reminders</p>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setAlertNotificationsEnabled((prev) => {
+                        const next = !prev;
+                        saveAlertNotificationsEnabled(next);
+                        return next;
+                      })
+                    }
+                    className="rounded border border-nyay-border px-2 py-1 text-[11px] text-nyay-muted hover:text-nyay-trust dark:hover:text-foreground"
+                  >
+                    {alertNotificationsEnabled ? "Pause popups" : "Enable popups"}
+                  </button>
+                </div>
+                {dueAlerts.length === 0 ? (
+                  <p className="text-xs text-nyay-muted">No due reminders right now.</p>
+                ) : (
+                  <ul className="max-h-56 space-y-1.5 overflow-y-auto pr-1">
+                    {dueAlerts.map(({ item, until }) => (
+                      <li key={`${item.id}-${item.date}`} className="rounded-lg border border-nyay-border px-2 py-1.5">
+                        <p className="text-xs font-medium text-nyay-trust dark:text-foreground">{item.title}</p>
+                        <p className="text-[11px] text-nyay-muted">
+                          {item.date}
+                          {item.time ? ` · ${item.time}` : ""}
+                          {" · "}
+                          {until === 0 ? "Today" : until === 1 ? "Tomorrow" : `In ${until} days`}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <div className="mt-2 flex items-center justify-between gap-2">
+                  <Link
+                    href={routes.calendar}
+                    className="text-xs font-medium text-nyay-authority-rich hover:underline dark:text-nyay-authority"
+                    onClick={() => setAlertsOpen(false)}
+                  >
+                    Open calendar
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={sendDueOnWhatsApp}
+                    disabled={dueAlerts.length === 0}
+                    className="rounded-md bg-[#25D366] px-2.5 py-1 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    Send on WhatsApp
+                  </button>
+                </div>
+              </div>
             ) : null}
-          </button>
+          </div>
           <button
             type="button"
             className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-nyay-border text-nyay-trust transition hover:bg-nyay-canvas focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-nyay-authority md:hidden dark:border-white/15 dark:text-foreground dark:hover:bg-white/5"
@@ -257,64 +333,11 @@ export function PracticeHeader() {
               );
             })}
           </nav>
-          {alertsOpen ? (
-            <div className="absolute right-0 top-12 z-70 w-[min(24rem,calc(100vw-1rem))] rounded-xl border border-nyay-border bg-nyay-surface p-3 nyay-card-shadow">
-              <div className="mb-2 flex items-center justify-between gap-2">
-                <p className="text-sm font-semibold text-nyay-trust dark:text-foreground">Reminders</p>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setAlertNotificationsEnabled((prev) => {
-                      const next = !prev;
-                      saveAlertNotificationsEnabled(next);
-                      return next;
-                    })
-                  }
-                  className="rounded border border-nyay-border px-2 py-1 text-[11px] text-nyay-muted hover:text-nyay-trust dark:hover:text-foreground"
-                >
-                  {alertNotificationsEnabled ? "Pause popups" : "Enable popups"}
-                </button>
-              </div>
-              {dueAlerts.length === 0 ? (
-                <p className="text-xs text-nyay-muted">No due reminders right now.</p>
-              ) : (
-                <ul className="max-h-56 space-y-1.5 overflow-y-auto pr-1">
-                  {dueAlerts.map(({ item, until }) => (
-                    <li key={`${item.id}-${item.date}`} className="rounded-lg border border-nyay-border px-2 py-1.5">
-                      <p className="text-xs font-medium text-nyay-trust dark:text-foreground">{item.title}</p>
-                      <p className="text-[11px] text-nyay-muted">
-                        {item.date}
-                        {item.time ? ` · ${item.time}` : ""}
-                        {" · "}
-                        {until === 0 ? "Today" : until === 1 ? "Tomorrow" : `In ${until} days`}
-                      </p>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              <div className="mt-2 flex items-center justify-between gap-2">
-                <Link
-                  href={routes.calendar}
-                  className="text-xs font-medium text-nyay-authority-rich hover:underline dark:text-nyay-authority"
-                  onClick={() => setAlertsOpen(false)}
-                >
-                  Open calendar
-                </Link>
-                <button
-                  type="button"
-                  onClick={sendDueOnWhatsApp}
-                  disabled={dueAlerts.length === 0}
-                  className="rounded-md bg-[#25D366] px-2.5 py-1 text-xs font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  Send on WhatsApp
-                </button>
-              </div>
-            </div>
-          ) : null}
         </div>
       </div>
 
       <div
+        ref={mobileMenuRef}
         id="practice-mobile-nav"
         className={[
           "border-t border-nyay-border/80 bg-nyay-surface/95 backdrop-blur-md md:hidden dark:border-white/10 dark:bg-[color-mix(in_srgb,var(--nyay-surface)_95%,transparent)]",
